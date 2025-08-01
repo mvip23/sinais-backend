@@ -1,0 +1,58 @@
+{% extends "admin/base_site.html" %}
+{% block branding %}
+  {{ block.super }}
+  <button id="voice-btn" style="background:#ffd700;color:#181818;border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:1.3rem;box-shadow:0 2px 8px #0006;margin-left:1rem;vertical-align:middle;" title="Ativar comando de voz">🎤</button>
+  <span id="voice-status" style="display:none;margin-left:0.7rem;color:#25d366;font-weight:bold;">Ouvindo...</span>
+{% endblock %}
+{% block extrahead %}
+  {{ block.super }}
+  <script>
+    window.addEventListener('DOMContentLoaded', function() {
+      const btn = document.getElementById('voice-btn');
+      const statusSpan = document.getElementById('voice-status');
+      let recognition;
+      let listening = false;
+      if (btn && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'pt-BR';
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.onstart = () => { statusSpan.style.display = 'inline'; };
+        recognition.onend = () => { statusSpan.style.display = 'none'; listening = false; btn.style.background = '#ffd700'; };
+        recognition.onresult = function(event) {
+          const command = event.results[0][0].transcript;
+          statusSpan.textContent = 'Enviando comando: ' + command;
+          fetch('/ordens-servico/voice-command/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ command })
+          })
+          .then(r => r.json())
+          .then(data => {
+            statusSpan.textContent = data.message || data.error || 'Comando enviado!';
+            setTimeout(() => { statusSpan.style.display = 'none'; statusSpan.textContent = 'Ouvindo...'; }, 3000);
+          })
+          .catch(() => {
+            statusSpan.textContent = 'Erro ao enviar comando.';
+            setTimeout(() => { statusSpan.style.display = 'none'; statusSpan.textContent = 'Ouvindo...'; }, 3000);
+          });
+        };
+        btn.onclick = () => {
+          if (!listening) {
+            recognition.start();
+            listening = true;
+            btn.style.background = '#25d366';
+          } else {
+            recognition.stop();
+            listening = false;
+            btn.style.background = '#ffd700';
+          }
+        };
+      } else if (btn) {
+        btn.disabled = true;
+        btn.title = 'Reconhecimento de voz não suportado neste navegador.';
+      }
+    });
+  </script>
+{% endblock %} 

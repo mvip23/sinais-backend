@@ -1,0 +1,508 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}Relatório de RH - ERP{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: #333 !important;
+        }
+        .relatorio-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        .relatorio-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 3px solid #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: -2rem -2rem 3rem -2rem;
+        }
+        .relatorio-header h1 {
+            font-size: 3rem;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .relatorio-header p {
+            font-size: 1.2rem;
+            margin: 1rem 0 0 0;
+            opacity: 0.9;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(102,126,234,0.3);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+        .stat-card:hover::before {
+            transform: translateX(100%);
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .stat-card p {
+            font-size: 1.3rem;
+            margin: 0;
+            opacity: 0.9;
+        }
+        .table-container {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 2px solid #dee2e6;
+        }
+        .table-container h3 {
+            color: #495057;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: bold;
+        }
+        .rh-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .rh-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .rh-table td {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid #eee;
+            font-size: 1rem;
+        }
+        .rh-table tr:hover {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            transform: scale(1.01);
+            transition: all 0.3s ease;
+        }
+        .rh-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        .status-ativo {
+            background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .status-inativo {
+            background: linear-gradient(135deg, #d63031 0%, #c0392b 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .status-ferias {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .btn-voltar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.2rem 3rem;
+            border-radius: 15px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 2rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(102,126,234,0.3);
+        }
+        .btn-voltar:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+            color: white;
+            text-decoration: none;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(102,126,234,0.4);
+        }
+        .cargo-gerente {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .cargo-analista {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .cargo-assistente {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .cargo-estagiario {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .valor-alto {
+            color: #d63031;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .valor-normal {
+            color: #00b894;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .departamento {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="relatorio-container">
+    <div class="relatorio-header">
+        <h1>👥 Relatório de RH</h1>
+        <p>Gestão de recursos humanos e folha de pagamento</p>
+    </div>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_funcionarios.count }}</div>
+            <p>👥 Total de Funcionários</p>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ funcionarios_ativos.count }}</div>
+            <p>✅ Funcionários Ativos</p>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ funcionarios_ferias.count }}</div>
+            <p>🏖️ Em Férias</p>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">R$ {{ folha_pagamento_total|floatformat:2 }}</div>
+            <p>💰 Folha de Pagamento</p>
+        </div>
+    </div>
+    
+    <div class="table-container">
+        <h3>👥 Funcionários Ativos</h3>
+        <table class="rh-table">
+            <thead>
+                <tr>
+                    <th>👤 Nome</th>
+                    <th>🏢 Departamento</th>
+                    <th>💼 Cargo</th>
+                    <th>📅 Data Admissão</th>
+                    <th>💰 Salário</th>
+                    <th>📊 Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for funcionario in funcionarios_ativos %}
+                <tr>
+                    <td><strong>{{ funcionario.nome }}</strong></td>
+                    <td><span class="departamento">{{ funcionario.departamento }}</span></td>
+                    <td>
+                        {% if funcionario.cargo == 'gerente' %}
+                            <span class="cargo-gerente">👔 Gerente</span>
+                        {% elif funcionario.cargo == 'analista' %}
+                            <span class="cargo-analista">📊 Analista</span>
+                        {% elif funcionario.cargo == 'assistente' %}
+                            <span class="cargo-assistente">👨‍💼 Assistente</span>
+                        {% else %}
+                            <span class="cargo-estagiario">🎓 Estagiário</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ funcionario.data_admissao|date:"d/m/Y" }}</td>
+                    <td><span class="valor-normal">R$ {{ funcionario.salario|floatformat:2 }}</span></td>
+                    <td><span class="status-ativo">✅ Ativo</span></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 3rem; font-size: 1.2rem; color: #6c757d;">
+                        📭 Nenhum funcionário ativo encontrado
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-container">
+        <h3>🏢 Funcionários por Departamento</h3>
+        <table class="rh-table">
+            <thead>
+                <tr>
+                    <th>🏢 Departamento</th>
+                    <th>👥 Total de Funcionários</th>
+                    <th>💰 Salário Médio</th>
+                    <th>📊 % da Empresa</th>
+                    <th>💰 Folha do Depto</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for dept in funcionarios_por_departamento %}
+                <tr>
+                    <td><span class="departamento">{{ dept.departamento }}</span></td>
+                    <td><span class="valor-normal">{{ dept.total_funcionarios }}</span></td>
+                    <td><span class="valor-normal">R$ {{ dept.salario_medio|floatformat:2 }}</span></td>
+                    <td>{{ dept.percentual|floatformat:1 }}%</td>
+                    <td><span class="valor-normal">R$ {{ dept.folha_departamento|floatformat:2 }}</span></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 3rem; font-size: 1.2rem; color: #6c757d;">
+                        📭 Nenhum departamento encontrado
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-container">
+        <h3>💼 Funcionários por Cargo</h3>
+        <table class="rh-table">
+            <thead>
+                <tr>
+                    <th>💼 Cargo</th>
+                    <th>👥 Total</th>
+                    <th>💰 Salário Médio</th>
+                    <th>📊 % da Empresa</th>
+                    <th>💰 Folha do Cargo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cargo in funcionarios_por_cargo %}
+                <tr>
+                    <td>
+                        {% if cargo.cargo == 'gerente' %}
+                            <span class="cargo-gerente">👔 Gerente</span>
+                        {% elif cargo.cargo == 'analista' %}
+                            <span class="cargo-analista">📊 Analista</span>
+                        {% elif cargo.cargo == 'assistente' %}
+                            <span class="cargo-assistente">👨‍💼 Assistente</span>
+                        {% else %}
+                            <span class="cargo-estagiario">🎓 Estagiário</span>
+                        {% endif %}
+                    </td>
+                    <td><span class="valor-normal">{{ cargo.total_funcionarios }}</span></td>
+                    <td><span class="valor-normal">R$ {{ cargo.salario_medio|floatformat:2 }}</span></td>
+                    <td>{{ cargo.percentual|floatformat:1 }}%</td>
+                    <td><span class="valor-normal">R$ {{ cargo.folha_cargo|floatformat:2 }}</span></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 3rem; font-size: 1.2rem; color: #6c757d;">
+                        📭 Nenhum cargo encontrado
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-container">
+        <h3>🏖️ Funcionários em Férias</h3>
+        <table class="rh-table">
+            <thead>
+                <tr>
+                    <th>👤 Nome</th>
+                    <th>🏢 Departamento</th>
+                    <th>💼 Cargo</th>
+                    <th>📅 Início das Férias</th>
+                    <th>📅 Retorno</th>
+                    <th>📊 Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for funcionario in funcionarios_ferias %}
+                <tr>
+                    <td><strong>{{ funcionario.nome }}</strong></td>
+                    <td><span class="departamento">{{ funcionario.departamento }}</span></td>
+                    <td>
+                        {% if funcionario.cargo == 'gerente' %}
+                            <span class="cargo-gerente">👔 Gerente</span>
+                        {% elif funcionario.cargo == 'analista' %}
+                            <span class="cargo-analista">📊 Analista</span>
+                        {% elif funcionario.cargo == 'assistente' %}
+                            <span class="cargo-assistente">👨‍💼 Assistente</span>
+                        {% else %}
+                            <span class="cargo-estagiario">🎓 Estagiário</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ funcionario.inicio_ferias|date:"d/m/Y" }}</td>
+                    <td>{{ funcionario.retorno_ferias|date:"d/m/Y" }}</td>
+                    <td><span class="status-ferias">🏖️ Em Férias</span></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 3rem; font-size: 1.2rem; color: #6c757d;">
+                        ✅ Nenhum funcionário em férias
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-container">
+        <h3>💰 Resumo da Folha de Pagamento</h3>
+        <table class="rh-table">
+            <thead>
+                <tr>
+                    <th>📊 Item</th>
+                    <th>💰 Valor</th>
+                    <th>📊 % da Folha</th>
+                    <th>👥 Funcionários</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in resumo_folha %}
+                <tr>
+                    <td><strong>{{ item.item }}</strong></td>
+                    <td><span class="valor-normal">R$ {{ item.valor|floatformat:2 }}</span></td>
+                    <td>{{ item.percentual|floatformat:1 }}%</td>
+                    <td>{{ item.funcionarios }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 3rem; font-size: 1.2rem; color: #6c757d;">
+                        📭 Nenhum item de folha encontrado
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-container">
+        <h3>📊 Todos os Funcionários</h3>
+        <table class="rh-table">
+            <thead>
+                <tr>
+                    <th>👤 Nome</th>
+                    <th>🏢 Departamento</th>
+                    <th>💼 Cargo</th>
+                    <th>📅 Data Admissão</th>
+                    <th>💰 Salário</th>
+                    <th>📊 Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for funcionario in total_funcionarios %}
+                <tr>
+                    <td><strong>{{ funcionario.nome }}</strong></td>
+                    <td><span class="departamento">{{ funcionario.departamento }}</span></td>
+                    <td>
+                        {% if funcionario.cargo == 'gerente' %}
+                            <span class="cargo-gerente">👔 Gerente</span>
+                        {% elif funcionario.cargo == 'analista' %}
+                            <span class="cargo-analista">📊 Analista</span>
+                        {% elif funcionario.cargo == 'assistente' %}
+                            <span class="cargo-assistente">👨‍💼 Assistente</span>
+                        {% else %}
+                            <span class="cargo-estagiario">🎓 Estagiário</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ funcionario.data_admissao|date:"d/m/Y" }}</td>
+                    <td>
+                        {% if funcionario.salario > 5000 %}
+                            <span class="valor-alto">R$ {{ funcionario.salario|floatformat:2 }}</span>
+                        {% else %}
+                            <span class="valor-normal">R$ {{ funcionario.salario|floatformat:2 }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if funcionario.status == 'ativo' %}
+                            <span class="status-ativo">✅ Ativo</span>
+                        {% elif funcionario.status == 'ferias' %}
+                            <span class="status-ferias">🏖️ Em Férias</span>
+                        {% else %}
+                            <span class="status-inativo">❌ Inativo</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 3rem; font-size: 1.2rem; color: #6c757d;">
+                        📭 Nenhum funcionário encontrado
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div style="text-align: center;">
+        <a href="{% url 'relatorios_dashboard' %}" class="btn-voltar">
+            ← Voltar aos Relatórios
+        </a>
+    </div>
+</div>
+{% endblock %} 

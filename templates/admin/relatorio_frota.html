@@ -1,0 +1,540 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}Relatório de Frota - ERP{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: #333 !important;
+        }
+        .relatorio-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        .relatorio-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 3px solid #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: -2rem -2rem 3rem -2rem;
+        }
+        .relatorio-header h1 {
+            font-size: 3rem;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .relatorio-header p {
+            font-size: 1.2rem;
+            margin: 1rem 0 0 0;
+            opacity: 0.9;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(102,126,234,0.3);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+        .stat-card:hover::before {
+            transform: translateX(100%);
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .stat-card p {
+            font-size: 1.3rem;
+            margin: 0;
+            opacity: 0.9;
+        }
+        .table-container {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 2px solid #dee2e6;
+        }
+        .table-container h3 {
+            color: #495057;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: bold;
+        }
+        .frota-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .frota-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .frota-table td {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid #eee;
+            font-size: 1rem;
+        }
+        .frota-table tr:hover {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            transform: scale(1.01);
+            transition: all 0.3s ease;
+        }
+        .frota-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        .status-ativo {
+            background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .status-manutencao {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .status-inativo {
+            background: linear-gradient(135deg, #d63031 0%, #c0392b 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .btn-voltar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.2rem 3rem;
+            border-radius: 15px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 2rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(102,126,234,0.3);
+        }
+        .btn-voltar:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+            color: white;
+            text-decoration: none;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(102,126,234,0.4);
+        }
+        .tipo-carro {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .tipo-caminhao {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .tipo-moto {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .tipo-van {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .valor-alto {
+            color: #d63031;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .valor-normal {
+            color: #00b894;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .placa {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .manutencao-pendente {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="relatorio-container">
+    <div class="relatorio-header">
+        <h1>🚗 Relatório de Frota</h1>
+        <p>Gestão de veículos e manutenções</p>
+    </div>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_veiculos.count }}</div>
+            <p>🚗 Total de Veículos</p>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ veiculos_ativos.count }}</div>
+            <p>✅ Veículos Ativos</p>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ manutencoes_pendentes.count }}</div>
+            <p>🔧 Manutenções Pendentes</p>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">R$ {{ custo_total_frota|floatformat:2 }}</div>
+            <p>💰 Custo Total</p>
+        </div>
+    </div>
+    
+    <div class="table-container">
+        <h3>🔧 Veículos com Manutenção Pendente</h3>
+        <table class="frota-table">
+            <thead>
+                <tr>
+                    <th>🚗 Placa</th>
+                    <th>📋 Modelo</th>
+                    <th>👤 Motorista</th>
+                    <th>📅 Última Manutenção</th>
+                    <th>📅 Próxima Manutenção</th>
+                    <th>🏷️ Tipo</th>
+                    <th>📊 Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for veiculo in veiculos_manutencao %}
+                <tr>
+                    <td><span class="placa">{{ veiculo.placa }}</span></td>
+                    <td><strong>{{ veiculo.modelo }}</strong></td>
+                    <td>{{ veiculo.motorista.nome }}</td>
+                    <td>{{ veiculo.ultima_manutencao|date:"d/m/Y" }}</td>
+                    <td><span class="manutencao-pendente">{{ veiculo.proxima_manutencao|date:"d/m/Y" }}</span></td>
+                    <td>
+                        {% if veiculo.tipo == 'carro' %}
+                            <span class="tipo-carro">🚗 Carro</span>
+                        {% elif veiculo.tipo == 'caminhao' %}
+                            <span class="tipo-caminhao">🚛 Caminhão</span>
+                        {% elif veiculo.tipo == 'moto' %}
+                            <span class="tipo-moto">🏍️ Moto</span>
+                        {% else %}
+                            <span class="tipo-van">🚐 Van</span>
+                        {% endif %}
+                    </td>
+                    <td><span class="status-manutencao">🔧 Manutenção</span></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 3rem; font-size: 1.2rem; color: #6c757d;">
+                        ✅ Nenhum veículo com manutenção pendente
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-container">
+        <h3>✅ Veículos Ativos</h3>
+        <table class="frota-table">
+            <thead>
+                <tr>
+                    <th>🚗 Placa</th>
+                    <th>📋 Modelo</th>
+                    <th>👤 Motorista</th>
+                    <th>📅 Ano</th>
+                    <th>⛽ Combustível</th>
+                    <th>🏷️ Tipo</th>
+                    <th>📊 Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for veiculo in veiculos_ativos %}
+                <tr>
+                    <td><span class="placa">{{ veiculo.placa }}</span></td>
+                    <td><strong>{{ veiculo.modelo }}</strong></td>
+                    <td>{{ veiculo.motorista.nome }}</td>
+                    <td>{{ veiculo.ano }}</td>
+                    <td>{{ veiculo.combustivel }}</td>
+                    <td>
+                        {% if veiculo.tipo == 'carro' %}
+                            <span class="tipo-carro">🚗 Carro</span>
+                        {% elif veiculo.tipo == 'caminhao' %}
+                            <span class="tipo-caminhao">🚛 Caminhão</span>
+                        {% elif veiculo.tipo == 'moto' %}
+                            <span class="tipo-moto">🏍️ Moto</span>
+                        {% else %}
+                            <span class="tipo-van">🚐 Van</span>
+                        {% endif %}
+                    </td>
+                    <td><span class="status-ativo">✅ Ativo</span></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 3rem; font-size: 1.2rem; color: #6c757d;">
+                        📭 Nenhum veículo ativo encontrado
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-container">
+        <h3>👤 Veículos por Motorista</h3>
+        <table class="frota-table">
+            <thead>
+                <tr>
+                    <th>👤 Motorista</th>
+                    <th>🚗 Total de Veículos</th>
+                    <th>✅ Ativos</th>
+                    <th>🔧 Em Manutenção</th>
+                    <th>💰 Custo Total</th>
+                    <th>📊 % da Frota</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for motorista in veiculos_por_motorista %}
+                <tr>
+                    <td><strong>{{ motorista.motorista__nome }}</strong></td>
+                    <td><span class="valor-normal">{{ motorista.total_veiculos }}</span></td>
+                    <td><span class="valor-normal">{{ motorista.veiculos_ativos }}</span></td>
+                    <td><span class="valor-alto">{{ motorista.veiculos_manutencao }}</span></td>
+                    <td><span class="valor-normal">R$ {{ motorista.custo_total|floatformat:2 }}</span></td>
+                    <td>{{ motorista.percentual|floatformat:1 }}%</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 3rem; font-size: 1.2rem; color: #6c757d;">
+                        📭 Nenhum motorista encontrado
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-container">
+        <h3>🏷️ Veículos por Tipo</h3>
+        <table class="frota-table">
+            <thead>
+                <tr>
+                    <th>🏷️ Tipo</th>
+                    <th>🚗 Total</th>
+                    <th>✅ Ativos</th>
+                    <th>🔧 Em Manutenção</th>
+                    <th>💰 Custo Total</th>
+                    <th>📊 % da Frota</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tipo in veiculos_por_tipo %}
+                <tr>
+                    <td>
+                        {% if tipo.tipo == 'carro' %}
+                            <span class="tipo-carro">🚗 Carro</span>
+                        {% elif tipo.tipo == 'caminhao' %}
+                            <span class="tipo-caminhao">🚛 Caminhão</span>
+                        {% elif tipo.tipo == 'moto' %}
+                            <span class="tipo-moto">🏍️ Moto</span>
+                        {% else %}
+                            <span class="tipo-van">🚐 Van</span>
+                        {% endif %}
+                    </td>
+                    <td><span class="valor-normal">{{ tipo.total }}</span></td>
+                    <td><span class="valor-normal">{{ tipo.ativos }}</span></td>
+                    <td><span class="valor-alto">{{ tipo.manutencao }}</span></td>
+                    <td><span class="valor-normal">R$ {{ tipo.custo_total|floatformat:2 }}</span></td>
+                    <td>{{ tipo.percentual|floatformat:1 }}%</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 3rem; font-size: 1.2rem; color: #6c757d;">
+                        📭 Nenhum tipo de veículo encontrado
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-container">
+        <h3>🔧 Manutenções Pendentes</h3>
+        <table class="frota-table">
+            <thead>
+                <tr>
+                    <th>🚗 Veículo</th>
+                    <th>👤 Motorista</th>
+                    <th>🔧 Tipo de Manutenção</th>
+                    <th>📅 Data Prevista</th>
+                    <th>💰 Custo Estimado</th>
+                    <th>📊 Prioridade</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for manutencao in manutencoes_pendentes %}
+                <tr>
+                    <td><span class="placa">{{ manutencao.veiculo.placa }}</span></td>
+                    <td>{{ manutencao.veiculo.motorista.nome }}</td>
+                    <td><strong>{{ manutencao.tipo_manutencao }}</strong></td>
+                    <td>{{ manutencao.data_prevista|date:"d/m/Y" }}</td>
+                    <td><span class="valor-normal">R$ {{ manutencao.custo_estimado|floatformat:2 }}</span></td>
+                    <td>
+                        {% if manutencao.prioridade == 'alta' %}
+                            <span class="manutencao-pendente">🔥 Alta</span>
+                        {% elif manutencao.prioridade == 'media' %}
+                            <span class="status-manutencao">⚡ Média</span>
+                        {% else %}
+                            <span class="status-ativo">✅ Baixa</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 3rem; font-size: 1.2rem; color: #6c757d;">
+                        ✅ Nenhuma manutenção pendente
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-container">
+        <h3>📊 Todos os Veículos</h3>
+        <table class="frota-table">
+            <thead>
+                <tr>
+                    <th>🚗 Placa</th>
+                    <th>📋 Modelo</th>
+                    <th>👤 Motorista</th>
+                    <th>📅 Ano</th>
+                    <th>⛽ Combustível</th>
+                    <th>🏷️ Tipo</th>
+                    <th>💰 Custo Mensal</th>
+                    <th>📊 Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for veiculo in total_veiculos %}
+                <tr>
+                    <td><span class="placa">{{ veiculo.placa }}</span></td>
+                    <td><strong>{{ veiculo.modelo }}</strong></td>
+                    <td>{{ veiculo.motorista.nome }}</td>
+                    <td>{{ veiculo.ano }}</td>
+                    <td>{{ veiculo.combustivel }}</td>
+                    <td>
+                        {% if veiculo.tipo == 'carro' %}
+                            <span class="tipo-carro">🚗 Carro</span>
+                        {% elif veiculo.tipo == 'caminhao' %}
+                            <span class="tipo-caminhao">🚛 Caminhão</span>
+                        {% elif veiculo.tipo == 'moto' %}
+                            <span class="tipo-moto">🏍️ Moto</span>
+                        {% else %}
+                            <span class="tipo-van">🚐 Van</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if veiculo.custo_mensal > 2000 %}
+                            <span class="valor-alto">R$ {{ veiculo.custo_mensal|floatformat:2 }}</span>
+                        {% else %}
+                            <span class="valor-normal">R$ {{ veiculo.custo_mensal|floatformat:2 }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if veiculo.status == 'ativo' %}
+                            <span class="status-ativo">✅ Ativo</span>
+                        {% elif veiculo.status == 'manutencao' %}
+                            <span class="status-manutencao">🔧 Manutenção</span>
+                        {% else %}
+                            <span class="status-inativo">❌ Inativo</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" style="text-align: center; padding: 3rem; font-size: 1.2rem; color: #6c757d;">
+                        📭 Nenhum veículo encontrado
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div style="text-align: center;">
+        <a href="{% url 'relatorios_dashboard' %}" class="btn-voltar">
+            ← Voltar aos Relatórios
+        </a>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard ERP</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin: 0; padding: 20px; }
+        .dashboard-container { max-width: 1200px; margin: 2rem auto; padding: 2rem; background: #fff; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .dashboard-title { text-align: center; margin-bottom: 2rem; color: #333; font-size: 2.5rem; }
+        .dashboard-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+        .dashboard-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 15px; text-align: center; font-size: 1.2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        .dashboard-card:hover { transform: translateY(-5px); }
+        .dashboard-card h3 { margin: 0 0 1rem 0; font-size: 1.5rem; }
+        .dashboard-card .number { font-size: 3rem; font-weight: bold; margin: 1rem 0; }
+        
+        .voice-controls { text-align: center; margin-bottom: 2rem; }
+        #vozBtn { background: linear-gradient(135deg, #4caf50 0%, #45a049 100%); color: #fff; border: none; padding: 1rem 2rem; border-radius: 50px; font-size: 1.1rem; cursor: pointer; margin: 0 1rem; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(76,175,80,0.3); }
+        #vozBtn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(76,175,80,0.4); }
+        #vozBtn.listening { background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        
+        .voice-status { margin-top: 1rem; padding: 1rem; border-radius: 10px; background: #f8f9fa; border-left: 4px solid #4caf50; }
+        .voice-commands { margin-top: 2rem; padding: 1.5rem; background: #f8f9fa; border-radius: 10px; }
+        .voice-commands h4 { color: #333; margin-bottom: 1rem; }
+        .command-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+        .command-item { background: white; padding: 1rem; border-radius: 8px; border-left: 4px solid #667eea; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        
+        .chart-container { margin-top: 2rem; padding: 1rem; background: #f8f9fa; border-radius: 10px; }
+        
+        .quick-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 2rem; }
+        .action-btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 1rem; border-radius: 10px; cursor: pointer; transition: all 0.3s ease; text-decoration: none; text-align: center; }
+        .action-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102,126,234,0.3); }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <h1 class="dashboard-title">🎯 Dashboard ERP Inteligente</h1>
+    
+    <div class="voice-controls">
+        <button id="vozBtn">🎤 Comando de Voz</button>
+        <div id="voiceStatus" class="voice-status" style="display: none;">
+            <strong>Status:</strong> <span id="statusText">Pronto para comandos</span>
+        </div>
+    </div>
+    
+    <div class="dashboard-cards">
+        <div class="dashboard-card">
+            <h3>📋 Ordens de Serviço</h3>
+            <div class="number">{{ total_os }}</div>
+            <p>Total de OS</p>
+        </div>
+        <div class="dashboard-card">
+            <h3>👥 Clientes</h3>
+            <div class="number">{{ total_clientes }}</div>
+            <p>Clientes cadastrados</p>
+        </div>
+        <div class="dashboard-card">
+            <h3>💰 Vendas</h3>
+            <div class="number">{{ total_vendas }}</div>
+            <p>Vendas realizadas</p>
+        </div>
+    </div>
+    
+    <div class="voice-commands">
+        <h4>🎯 Comandos de Voz Disponíveis:</h4>
+        <div class="command-list">
+            <div class="command-item">
+                <strong>"Abrir clientes"</strong><br>
+                <small>Navega para o módulo de clientes</small>
+            </div>
+            <div class="command-item">
+                <strong>"Nova ordem de serviço"</strong><br>
+                <small>Cria uma nova OS</small>
+            </div>
+            <div class="command-item">
+                <strong>"Ver vendas"</strong><br>
+                <small>Abre o módulo de vendas</small>
+            </div>
+            <div class="command-item">
+                <strong>"Estoque"</strong><br>
+                <small>Acessa o controle de estoque</small>
+            </div>
+            <div class="command-item">
+                <strong>"Financeiro"</strong><br>
+                <small>Abre o módulo financeiro</small>
+            </div>
+            <div class="command-item">
+                <strong>"Produtos"</strong><br>
+                <small>Gerencia produtos</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="quick-actions">
+        <a href="/admin/ordens_servico/ordemservico/" class="action-btn">📋 Ordens de Serviço</a>
+        <a href="/admin/clientes/cliente/" class="action-btn">👥 Clientes</a>
+        <a href="/admin/vendas/venda/" class="action-btn">💰 Vendas</a>
+        <a href="/admin/estoque/estoque/" class="action-btn">📦 Estoque</a>
+        <a href="/financeiro/" class="action-btn">💳 Financeiro</a>
+        <a href="/admin/produtos/produto/" class="action-btn">🛍️ Produtos</a>
+    </div>
+    
+    <div class="chart-container">
+        <canvas id="graficoResumo" height="100"></canvas>
+    </div>
+</div>
+
+<script>
+// Gráfico Chart.js melhorado
+const ctx = document.getElementById('graficoResumo').getContext('2d');
+const grafico = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Ordens de Serviço', 'Clientes', 'Vendas'],
+        datasets: [{
+            data: [{{ total_os }}, {{ total_clientes }}, {{ total_vendas }}],
+            backgroundColor: ['#4caf50', '#2196f3', '#ff9800'],
+            borderWidth: 2,
+            borderColor: '#fff'
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { 
+            legend: { 
+                display: true,
+                position: 'bottom'
+            },
+            title: {
+                display: true,
+                text: 'Resumo do Sistema',
+                font: { size: 16 }
+            }
+        }
+    }
+});
+
+// Sistema de Comando de Voz Inteligente
+class VoiceController {
+    constructor() {
+        this.recognition = null;
+        this.isListening = false;
+        this.commands = {
+            'abrir clientes': () => window.location.href = '/admin/clientes/cliente/',
+            'nova ordem de serviço': () => window.location.href = '/admin/ordens_servico/ordemservico/add/',
+            'ver vendas': () => window.location.href = '/admin/vendas/venda/',
+            'estoque': () => window.location.href = '/admin/estoque/estoque/',
+            'financeiro': () => window.location.href = '/financeiro/',
+            'produtos': () => window.location.href = '/admin/produtos/produto/',
+            'dashboard': () => window.location.href = '/dashboard/',
+            'usuários': () => window.location.href = '/admin/auth/user/',
+            'empresas': () => window.location.href = '/admin/empresas/empresa/',
+            'lojas': () => window.location.href = '/admin/lojas/loja/',
+            'depósitos': () => window.location.href = '/admin/depositos/deposito/',
+            'transferências': () => window.location.href = '/admin/transferencias/transferenciaestoque/',
+            'nfe': () => window.location.href = '/admin/nfe/nfe/',
+            'nova venda': () => window.location.href = '/admin/vendas/venda/add/',
+            'novo cliente': () => window.location.href = '/admin/clientes/cliente/add/',
+            'novo produto': () => window.location.href = '/admin/produtos/produto/add/',
+                               'relatórios': () => window.location.href = '/relatorios/',
+                   'consignados': () => window.location.href = '/consignados/',
+            'ajuda': () => this.showHelp(),
+            'status': () => this.showStatus()
+        };
+    }
+
+    init() {
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            this.recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            this.recognition.lang = 'pt-BR';
+            this.recognition.continuous = false;
+            this.recognition.interimResults = false;
+            
+            this.recognition.onstart = () => {
+                this.isListening = true;
+                this.updateStatus('🎤 Ouvindo...', 'listening');
+            };
+            
+            this.recognition.onresult = (event) => {
+                const comando = event.results[0][0].transcript.toLowerCase().trim();
+                this.processCommand(comando);
+            };
+            
+            this.recognition.onerror = (event) => {
+                this.updateStatus(`Erro: ${event.error}`, 'error');
+                this.isListening = false;
+            };
+            
+            this.recognition.onend = () => {
+                this.isListening = false;
+                this.updateStatus('Pronto para comandos', 'ready');
+            };
+        } else {
+            this.updateStatus('Navegador não suporta reconhecimento de voz', 'error');
+        }
+    }
+
+    startListening() {
+        if (this.recognition && !this.isListening) {
+            this.recognition.start();
+        }
+    }
+
+    processCommand(comando) {
+        this.updateStatus(`Comando: "${comando}"`, 'processing');
+        
+        // Procura por comandos que contenham as palavras-chave
+        for (let [key, action] of Object.entries(this.commands)) {
+            if (comando.includes(key) || key.includes(comando)) {
+                this.updateStatus(`Executando: ${key}`, 'success');
+                setTimeout(() => action(), 500);
+                return;
+            }
+        }
+        
+        // Comandos especiais
+        if (comando.includes('quantos') || comando.includes('total')) {
+            this.showCounts();
+        } else if (comando.includes('atualizar') || comando.includes('refresh')) {
+            location.reload();
+        } else {
+            this.updateStatus(`Comando não reconhecido: "${comando}"`, 'error');
+            this.showHelp();
+        }
+    }
+
+    showCounts() {
+        const message = `📊 Resumo atual:\n` +
+                       `• Ordens de Serviço: {{ total_os }}\n` +
+                       `• Clientes: {{ total_clientes }}\n` +
+                       `• Vendas: {{ total_vendas }}`;
+        this.showMessage(message);
+    }
+
+    showHelp() {
+        const helpText = `🎯 Comandos disponíveis:\n` +
+                        `• "Abrir clientes" - Navega para clientes\n` +
+                        `• "Nova ordem de serviço" - Cria nova OS\n` +
+                        `• "Ver vendas" - Abre vendas\n` +
+                        `• "Estoque" - Controle de estoque\n` +
+                        `• "Financeiro" - Módulo financeiro\n` +
+                        `• "Produtos" - Gerencia produtos\n` +
+                        `• "Quantos clientes" - Mostra totais\n` +
+                        `• "Atualizar" - Recarrega a página`;
+        this.showMessage(helpText);
+    }
+
+    showStatus() {
+        this.showMessage('✅ Sistema funcionando normalmente');
+    }
+
+    showMessage(message) {
+        alert(message);
+    }
+
+    updateStatus(text, type = 'ready') {
+        const statusEl = document.getElementById('voiceStatus');
+        const statusTextEl = document.getElementById('statusText');
+        const btn = document.getElementById('vozBtn');
+        
+        statusEl.style.display = 'block';
+        statusTextEl.textContent = text;
+        
+        // Remove classes anteriores
+        btn.classList.remove('listening', 'error', 'success');
+        
+        // Adiciona classe baseada no tipo
+        if (type === 'listening') {
+            btn.classList.add('listening');
+        }
+        
+        // Auto-hide após 3 segundos
+        setTimeout(() => {
+            if (type !== 'listening') {
+                statusEl.style.display = 'none';
+            }
+        }, 3000);
+    }
+}
+
+// Inicializar sistema de voz
+const voiceController = new VoiceController();
+voiceController.init();
+
+// Event listener para o botão
+document.getElementById('vozBtn').addEventListener('click', () => {
+    voiceController.startListening();
+});
+
+// Comandos de teclado
+document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.key === 'v') {
+        e.preventDefault();
+        voiceController.startListening();
+    }
+});
+
+// Feedback visual inicial
+setTimeout(() => {
+    voiceController.updateStatus('✅ Sistema de voz ativo - Pressione o botão ou Ctrl+V', 'ready');
+}, 1000);
+</script>
+</body>
+</html> 

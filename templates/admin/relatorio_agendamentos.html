@@ -1,0 +1,512 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}Relatório de Agendamentos - ERP{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: #333 !important;
+        }
+        .relatorio-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        .relatorio-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 3px solid #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: -2rem -2rem 3rem -2rem;
+        }
+        .relatorio-header h1 {
+            font-size: 3rem;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .relatorio-header p {
+            font-size: 1.2rem;
+            margin: 1rem 0 0 0;
+            opacity: 0.9;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(102,126,234,0.3);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+        .stat-card:hover::before {
+            transform: translateX(100%);
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .stat-card p {
+            font-size: 1.3rem;
+            margin: 0;
+            opacity: 0.9;
+        }
+        .table-container {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 2px solid #dee2e6;
+        }
+        .table-container h3 {
+            color: #495057;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: bold;
+        }
+        .agendamentos-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .agendamentos-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .agendamentos-table td {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid #eee;
+            font-size: 1rem;
+        }
+        .agendamentos-table tr:hover {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            transform: scale(1.01);
+            transition: all 0.3s ease;
+        }
+        .agendamentos-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        .status-confirmado {
+            background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .status-pendente {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .status-cancelado {
+            background: linear-gradient(135deg, #d63031 0%, #c0392b 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .btn-voltar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.2rem 3rem;
+            border-radius: 15px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 2rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(102,126,234,0.3);
+        }
+        .btn-voltar:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+            color: white;
+            text-decoration: none;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(102,126,234,0.4);
+        }
+        .tipo-reuniao {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .tipo-consulta {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .tipo-manutencao {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .tipo-outro {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .prioridade-alta {
+            background: linear-gradient(135deg, #d63031 0%, #c0392b 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .prioridade-media {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .prioridade-baixa {
+            background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="relatorio-container">
+    <div class="relatorio-header">
+        <h1>📅 Relatório de Agendamentos</h1>
+        <p>Gestão de compromissos, reuniões e eventos</p>
+    </div>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_agendamentos.count }}</div>
+            <p>📅 Total de Agendamentos</p>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ agendamentos_hoje.count }}</div>
+            <p>📅 Agendamentos Hoje</p>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ agendamentos_semana.count }}</div>
+            <p>📅 Esta Semana</p>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ agendamentos_pendentes.count }}</div>
+            <p>⏳ Pendentes</p>
+        </div>
+    </div>
+    
+    <div class="table-container">
+        <h3>📅 Agendamentos de Hoje</h3>
+        <table class="agendamentos-table">
+            <thead>
+                <tr>
+                    <th>👤 Cliente/Participante</th>
+                    <th>📋 Título</th>
+                    <th>⏰ Horário</th>
+                    <th>🏷️ Tipo</th>
+                    <th>👨‍💼 Responsável</th>
+                    <th>📊 Status</th>
+                    <th>⭐ Prioridade</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for agendamento in agendamentos_hoje %}
+                <tr>
+                    <td><strong>{{ agendamento.cliente.nome }}</strong></td>
+                    <td>{{ agendamento.titulo }}</td>
+                    <td>{{ agendamento.horario|time:"H:i" }}</td>
+                    <td>
+                        {% if agendamento.tipo == 'reuniao' %}
+                            <span class="tipo-reuniao">🤝 Reunião</span>
+                        {% elif agendamento.tipo == 'consulta' %}
+                            <span class="tipo-consulta">👨‍⚕️ Consulta</span>
+                        {% elif agendamento.tipo == 'manutencao' %}
+                            <span class="tipo-manutencao">🔧 Manutenção</span>
+                        {% else %}
+                            <span class="tipo-outro">📋 Outro</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ agendamento.responsavel.nome }}</td>
+                    <td>
+                        {% if agendamento.status == 'confirmado' %}
+                            <span class="status-confirmado">✅ Confirmado</span>
+                        {% elif agendamento.status == 'pendente' %}
+                            <span class="status-pendente">⏳ Pendente</span>
+                        {% else %}
+                            <span class="status-cancelado">❌ Cancelado</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if agendamento.prioridade == 'alta' %}
+                            <span class="prioridade-alta">🔥 Alta</span>
+                        {% elif agendamento.prioridade == 'media' %}
+                            <span class="prioridade-media">⚡ Média</span>
+                        {% else %}
+                            <span class="prioridade-baixa">✅ Baixa</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 3rem; font-size: 1.2rem; color: #6c757d;">
+                        📭 Nenhum agendamento para hoje
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-container">
+        <h3>📅 Agendamentos da Semana</h3>
+        <table class="agendamentos-table">
+            <thead>
+                <tr>
+                    <th>👤 Cliente/Participante</th>
+                    <th>📋 Título</th>
+                    <th>📅 Data</th>
+                    <th>⏰ Horário</th>
+                    <th>🏷️ Tipo</th>
+                    <th>👨‍💼 Responsável</th>
+                    <th>📊 Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for agendamento in agendamentos_semana %}
+                <tr>
+                    <td><strong>{{ agendamento.cliente.nome }}</strong></td>
+                    <td>{{ agendamento.titulo }}</td>
+                    <td>{{ agendamento.data|date:"d/m/Y" }}</td>
+                    <td>{{ agendamento.horario|time:"H:i" }}</td>
+                    <td>
+                        {% if agendamento.tipo == 'reuniao' %}
+                            <span class="tipo-reuniao">🤝 Reunião</span>
+                        {% elif agendamento.tipo == 'consulta' %}
+                            <span class="tipo-consulta">👨‍⚕️ Consulta</span>
+                        {% elif agendamento.tipo == 'manutencao' %}
+                            <span class="tipo-manutencao">🔧 Manutenção</span>
+                        {% else %}
+                            <span class="tipo-outro">📋 Outro</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ agendamento.responsavel.nome }}</td>
+                    <td>
+                        {% if agendamento.status == 'confirmado' %}
+                            <span class="status-confirmado">✅ Confirmado</span>
+                        {% elif agendamento.status == 'pendente' %}
+                            <span class="status-pendente">⏳ Pendente</span>
+                        {% else %}
+                            <span class="status-cancelado">❌ Cancelado</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 3rem; font-size: 1.2rem; color: #6c757d;">
+                        📭 Nenhum agendamento para esta semana
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-container">
+        <h3>👨‍💼 Agendamentos por Responsável</h3>
+        <table class="agendamentos-table">
+            <thead>
+                <tr>
+                    <th>👨‍💼 Responsável</th>
+                    <th>📅 Total de Agendamentos</th>
+                    <th>✅ Confirmados</th>
+                    <th>⏳ Pendentes</th>
+                    <th>❌ Cancelados</th>
+                    <th>📊 % Confirmação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for responsavel in agendamentos_por_responsavel %}
+                <tr>
+                    <td><strong>{{ responsavel.responsavel__nome }}</strong></td>
+                    <td>{{ responsavel.total_agendamentos }}</td>
+                    <td>{{ responsavel.confirmados }}</td>
+                    <td>{{ responsavel.pendentes }}</td>
+                    <td>{{ responsavel.cancelados }}</td>
+                    <td>{{ responsavel.percentual_confirmacao|floatformat:1 }}%</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 3rem; font-size: 1.2rem; color: #6c757d;">
+                        📭 Nenhum responsável encontrado
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-container">
+        <h3>🏷️ Agendamentos por Tipo</h3>
+        <table class="agendamentos-table">
+            <thead>
+                <tr>
+                    <th>🏷️ Tipo</th>
+                    <th>📅 Total</th>
+                    <th>✅ Confirmados</th>
+                    <th>⏳ Pendentes</th>
+                    <th>❌ Cancelados</th>
+                    <th>📊 % do Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tipo in agendamentos_por_tipo %}
+                <tr>
+                    <td>
+                        {% if tipo.tipo == 'reuniao' %}
+                            <span class="tipo-reuniao">🤝 Reunião</span>
+                        {% elif tipo.tipo == 'consulta' %}
+                            <span class="tipo-consulta">👨‍⚕️ Consulta</span>
+                        {% elif tipo.tipo == 'manutencao' %}
+                            <span class="tipo-manutencao">🔧 Manutenção</span>
+                        {% else %}
+                            <span class="tipo-outro">📋 Outro</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ tipo.total }}</td>
+                    <td>{{ tipo.confirmados }}</td>
+                    <td>{{ tipo.pendentes }}</td>
+                    <td>{{ tipo.cancelados }}</td>
+                    <td>{{ tipo.percentual|floatformat:1 }}%</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 3rem; font-size: 1.2rem; color: #6c757d;">
+                        📭 Nenhum tipo de agendamento encontrado
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-container">
+        <h3>📊 Todos os Agendamentos</h3>
+        <table class="agendamentos-table">
+            <thead>
+                <tr>
+                    <th>👤 Cliente/Participante</th>
+                    <th>📋 Título</th>
+                    <th>📅 Data</th>
+                    <th>⏰ Horário</th>
+                    <th>🏷️ Tipo</th>
+                    <th>👨‍💼 Responsável</th>
+                    <th>📊 Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for agendamento in total_agendamentos %}
+                <tr>
+                    <td><strong>{{ agendamento.cliente.nome }}</strong></td>
+                    <td>{{ agendamento.titulo }}</td>
+                    <td>{{ agendamento.data|date:"d/m/Y" }}</td>
+                    <td>{{ agendamento.horario|time:"H:i" }}</td>
+                    <td>
+                        {% if agendamento.tipo == 'reuniao' %}
+                            <span class="tipo-reuniao">🤝 Reunião</span>
+                        {% elif agendamento.tipo == 'consulta' %}
+                            <span class="tipo-consulta">👨‍⚕️ Consulta</span>
+                        {% elif agendamento.tipo == 'manutencao' %}
+                            <span class="tipo-manutencao">🔧 Manutenção</span>
+                        {% else %}
+                            <span class="tipo-outro">📋 Outro</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ agendamento.responsavel.nome }}</td>
+                    <td>
+                        {% if agendamento.status == 'confirmado' %}
+                            <span class="status-confirmado">✅ Confirmado</span>
+                        {% elif agendamento.status == 'pendente' %}
+                            <span class="status-pendente">⏳ Pendente</span>
+                        {% else %}
+                            <span class="status-cancelado">❌ Cancelado</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 3rem; font-size: 1.2rem; color: #6c757d;">
+                        📭 Nenhum agendamento encontrado
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div style="text-align: center;">
+        <a href="{% url 'relatorios_dashboard' %}" class="btn-voltar">
+            ← Voltar aos Relatórios
+        </a>
+    </div>
+</div>
+{% endblock %} 

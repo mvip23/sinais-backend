@@ -1,0 +1,396 @@
+{% extends 'website/base.html' %}
+{% load custom_filters %}
+{% load static %}
+
+{% block title %}Sistema JAM - O ERP Mais Moderno do Mundo{% endblock %}
+{% block description %}Sistema JAM - O ERP mais moderno do mundo com IA integrada, interface intuitiva e funcionalidades avançadas para sua empresa.{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 hero-content" data-aos="fade-right">
+                <h1 class="hero-title">
+                    O ERP Mais Moderno<br>
+                    <span class="text-warning">do Mundo</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Sistema completo com IA integrada, interface intuitiva e funcionalidades 
+                    avançadas que vão revolucionar a gestão da sua empresa.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{% url 'website:demo' %}" class="btn btn-warning btn-lg">
+                        <i class="fas fa-play me-2"></i>Demo Grátis
+                    </a>
+                    <a href="{% url 'website:planos' %}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-rocket me-2"></i>Começar Agora
+                    </a>
+                </div>
+                
+                <!-- Lead Capture -->
+                <div class="mt-4 p-3 bg-white bg-opacity-10 rounded">
+                    <p class="mb-2 text-white-50">Receba 30 dias grátis!</p>
+                    <form id="leadForm" class="row g-2">
+                        {% csrf_token %}
+                        <div class="col-md-6">
+                            <input type="email" class="form-control" placeholder="Seu email" id="leadEmail" required>
+                        </div>
+                        <div class="col-md-6">
+                            <button type="submit" class="btn btn-warning w-100">
+                                <i class="fas fa-gift me-2"></i>30 Dias Grátis
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-lg-6" data-aos="fade-left">
+                <div class="text-center">
+                    <img src="https://via.placeholder.com/600x400/2563eb/ffffff?text=Sistema+JAM" 
+                         alt="Sistema JAM Dashboard" class="img-fluid rounded shadow-lg">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="display-4 fw-bold mb-3" data-aos="fade-up">
+                    Por que escolher o Sistema JAM?
+                </h2>
+                <p class="lead text-muted" data-aos="fade-up" data-aos-delay="100">
+                    Funcionalidades inovadoras que nenhum outro ERP oferece
+                </p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            {% for beneficio in beneficios %}
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:1|multiply:100 }}">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="{{ beneficio.icone }}"></i>
+                    </div>
+                    <h4>{{ beneficio.titulo }}</h4>
+                    <p class="text-muted">{{ beneficio.descricao }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <!-- Default features -->
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h4>IA Integrada</h4>
+                    <p class="text-muted">Inteligência artificial que aprende com seus dados e otimiza processos automaticamente.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h4>100% Responsivo</h4>
+                    <p class="text-muted">Acesse de qualquer dispositivo com interface adaptativa e moderna.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h4>Relatórios Avançados</h4>
+                    <p class="text-muted">Dashboards interativos com análises preditivas e insights em tempo real.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h4>Segurança Máxima</h4>
+                    <p class="text-muted">Criptografia de ponta a ponta e backup automático na nuvem.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="500">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <h4>Sincronização em Tempo Real</h4>
+                    <p class="text-muted">Todos os dados sincronizados instantaneamente entre dispositivos.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="600">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h4>Suporte 24/7</h4>
+                    <p class="text-muted">Equipe especializada disponível 24 horas por dia para ajudar você.</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Pricing Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="display-4 fw-bold mb-3" data-aos="fade-up">
+                    Planos que cabem no seu bolso
+                </h2>
+                <p class="lead text-muted" data-aos="fade-up" data-aos-delay="100">
+                    Escolha o plano ideal para sua empresa
+                </p>
+            </div>
+        </div>
+        
+        <div class="row g-4 justify-content-center">
+            {% for plano in planos %}
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter|multiply:100 }}">
+                <div class="pricing-card h-100 {% if plano.destaque %}featured{% endif %}">
+                    {% if plano.destaque %}
+                    <div class="position-absolute top-0 start-50 translate-middle-x">
+                        <span class="badge bg-warning text-dark px-3 py-2">Mais Popular</span>
+                    </div>
+                    {% endif %}
+                    
+                    <h4 class="mb-3">{{ plano.nome }}</h4>
+                    <p class="text-muted mb-4">{{ plano.descricao }}</p>
+                    
+                    <div class="price">
+                        R$ {{ plano.preco_mensal }}
+                        <span class="price-period">/mês</span>
+                    </div>
+                    
+                    {% if plano.economia_anual > 0 %}
+                    <p class="text-success mb-4">
+                        <i class="fas fa-save me-2"></i>
+                        Economia de R$ {{ plano.economia_anual }} no plano anual
+                    </p>
+                    {% endif %}
+                    
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Até {{ plano.max_usuarios }} usuários
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            {{ plano.max_empresas }} empresa(s)
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Até {{ plano.max_produtos }} produtos
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Até {{ plano.max_clientes }} clientes
+                        </li>
+                        {% if plano.tem_ia_assistant %}
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            IA Assistant
+                        </li>
+                        {% endif %}
+                        {% if plano.tem_api %}
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            API REST
+                        </li>
+                        {% endif %}
+                        {% if plano.tem_suporte_prioritario %}
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Suporte Prioritário
+                        </li>
+                        {% endif %}
+                    </ul>
+                    
+                    <a href="{% url 'website:demo' %}" class="btn btn-primary w-100">
+                        Começar Grátis
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <!-- Default plans -->
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="pricing-card h-100">
+                    <h4 class="mb-3">Starter</h4>
+                    <p class="text-muted mb-4">Perfeito para pequenas empresas</p>
+                    
+                    <div class="price">
+                        R$ 97
+                        <span class="price-period">/mês</span>
+                    </div>
+                    
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Até 3 usuários</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>1 empresa</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Até 500 produtos</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Até 1.000 clientes</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Módulos básicos</li>
+                    </ul>
+                    
+                    <a href="{% url 'website:demo' %}" class="btn btn-primary w-100">Começar Grátis</a>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="pricing-card h-100 featured">
+                    <div class="position-absolute top-0 start-50 translate-middle-x">
+                        <span class="badge bg-warning text-dark px-3 py-2">Mais Popular</span>
+                    </div>
+                    
+                    <h4 class="mb-3">Professional</h4>
+                    <p class="text-muted mb-4">Ideal para empresas em crescimento</p>
+                    
+                    <div class="price">
+                        R$ 197
+                        <span class="price-period">/mês</span>
+                    </div>
+                    
+                    <p class="text-success mb-4">
+                        <i class="fas fa-save me-2"></i>
+                        Economia de R$ 400 no plano anual
+                    </p>
+                    
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Até 10 usuários</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>3 empresas</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Produtos ilimitados</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Clientes ilimitados</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Todos os módulos</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>IA Assistant</li>
+                    </ul>
+                    
+                    <a href="{% url 'website:demo' %}" class="btn btn-primary w-100">Começar Grátis</a>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="pricing-card h-100">
+                    <h4 class="mb-3">Enterprise</h4>
+                    <p class="text-muted mb-4">Para grandes corporações</p>
+                    
+                    <div class="price">
+                        R$ 497
+                        <span class="price-period">/mês</span>
+                    </div>
+                    
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Usuários ilimitados</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Empresas ilimitadas</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Tudo ilimitado</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>IA Assistant Avançado</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>API REST</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Suporte Prioritário</li>
+                    </ul>
+                    
+                    <a href="{% url 'website:demo' %}" class="btn btn-primary w-100">Começar Grátis</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+{% if depoimentos %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="display-4 fw-bold mb-3" data-aos="fade-up">
+                    O que nossos clientes dizem
+                </h2>
+                <p class="lead text-muted" data-aos="fade-up" data-aos-delay="100">
+                    Empresas que confiam no Sistema JAM
+                </p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            {% for depoimento in depoimentos %}
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter|multiply:100 }}">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        {% if depoimento.foto %}
+                        <img src="{{ depoimento.foto.url }}" alt="{{ depoimento.nome }}" 
+                             class="rounded-circle mb-3" width="80" height="80">
+                        {% else %}
+                        <div class="rounded-circle bg-primary d-inline-flex align-items-center justify-content-center mb-3" 
+                             style="width: 80px; height: 80px;">
+                            <i class="fas fa-user text-white fs-4"></i>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="mb-3">
+                            {% for i in "12345" %}
+                            <i class="fas fa-star {% if forloop.counter <= depoimento.nota %}text-warning{% else %}text-muted{% endif %}"></i>
+                            {% endfor %}
+                        </div>
+                        
+                        <p class="card-text">{{ depoimento.depoimento }}</p>
+                        
+                        <h6 class="card-title mb-1">{{ depoimento.nome }}</h6>
+                        <small class="text-muted">{{ depoimento.cargo }} - {{ depoimento.empresa }}</small>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- CTA Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="display-4 fw-bold mb-3" data-aos="fade-up">
+                    Pronto para revolucionar sua empresa?
+                </h2>
+                <p class="lead mb-4" data-aos="fade-up" data-aos-delay="100">
+                    Comece hoje mesmo com 30 dias grátis. Sem compromisso, sem cartão de crédito.
+                </p>
+                <div class="d-flex flex-wrap gap-3 justify-content-center" data-aos="fade-up" data-aos-delay="200">
+                    <a href="{% url 'website:demo' %}" class="btn btn-warning btn-lg">
+                        <i class="fas fa-play me-2"></i>Demo Grátis
+                    </a>
+                    <a href="{% url 'website:contato' %}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-phone me-2"></i>Falar com Vendas
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('leadForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('leadEmail').value;
+    const formData = {
+        email: email,
+        fonte: 'home_hero'
+    };
+    
+    capturarLead(formData);
+    this.reset();
+});
+</script>
+{% endblock %} 

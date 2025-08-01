@@ -1,0 +1,11 @@
+{
+  "models": [
+    {
+      "title": "LM Studio Local",
+      "provider": "openai",
+      "apiKey": "sk-local",
+      "apiBase": "http://localhost:1234/v1",
+      "model": "deepseek-coder:13b-instruct-q4_K_M"
+    }
+  ]
+}

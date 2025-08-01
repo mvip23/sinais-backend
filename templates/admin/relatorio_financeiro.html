@@ -1,0 +1,383 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}Relatório Financeiro - ERP{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: #333 !important;
+        }
+        .relatorio-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        .relatorio-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 3px solid #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: -2rem -2rem 3rem -2rem;
+        }
+        .relatorio-header h1 {
+            font-size: 3rem;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .relatorio-header p {
+            font-size: 1.2rem;
+            margin: 1rem 0 0 0;
+            opacity: 0.9;
+        }
+        .filtros {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            border: 2px solid #dee2e6;
+        }
+        .filtros form {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .filtros label {
+            font-weight: bold;
+            color: #495057;
+            margin-right: 0.5rem;
+        }
+        .filtros input {
+            padding: 0.8rem 1.2rem;
+            border: 2px solid #ced4da;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .filtros input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+            outline: none;
+        }
+        .filtros button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.3);
+        }
+        .filtros button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102,126,234,0.4);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        .stat-card {
+            padding: 2.5rem;
+            border-radius: 20px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+        .stat-card:hover::before {
+            transform: translateX(100%);
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-card.receitas {
+            background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
+        }
+        .stat-card.despesas {
+            background: linear-gradient(135deg, #e17055 0%, #d63031 100%);
+        }
+        .stat-card.saldo {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .stat-card p {
+            font-size: 1.3rem;
+            margin: 0;
+            opacity: 0.9;
+        }
+        .table-container {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 2px solid #dee2e6;
+        }
+        .table-container h3 {
+            color: #495057;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: bold;
+        }
+        .financeiro-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .financeiro-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .financeiro-table td {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid #eee;
+            font-size: 1rem;
+        }
+        .financeiro-table tr:hover {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            transform: scale(1.01);
+            transition: all 0.3s ease;
+        }
+        .financeiro-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        .btn-voltar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.2rem 3rem;
+            border-radius: 15px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 2rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(102,126,234,0.3);
+        }
+        .btn-voltar:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+            color: white;
+            text-decoration: none;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(102,126,234,0.4);
+        }
+        .valor-positivo {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .valor-negativo {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .categoria-tag {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="relatorio-container">
+    <div class="relatorio-header">
+        <h1>💳 Relatório Financeiro</h1>
+        <p>Análise completa de receitas, despesas e balanço financeiro</p>
+    </div>
+    
+    <div class="filtros">
+        <form method="get">
+            <label>📅 Data Início:</label>
+            <input type="date" name="data_inicio" value="{{ data_inicio|default:'' }}">
+            
+            <label>📅 Data Fim:</label>
+            <input type="date" name="data_fim" value="{{ data_fim|default:'' }}">
+            
+            <button type="submit">🔍 Filtrar Dados</button>
+        </form>
+    </div>
+    
+    <div class="stats-grid">
+        <div class="stat-card receitas">
+            <div class="stat-number">R$ {{ total_receitas|floatformat:2 }}</div>
+            <p>📈 Total Receitas</p>
+        </div>
+        <div class="stat-card despesas">
+            <div class="stat-number">R$ {{ total_despesas|floatformat:2 }}</div>
+            <p>📉 Total Despesas</p>
+        </div>
+        <div class="stat-card saldo">
+            <div class="stat-number">R$ {{ saldo|floatformat:2 }}</div>
+            <p>💰 Saldo</p>
+        </div>
+    </div>
+    
+    <div class="table-container">
+        <h3>📈 Receitas por Categoria</h3>
+        <table class="financeiro-table">
+            <thead>
+                <tr>
+                    <th>🏷️ Categoria</th>
+                    <th>📊 Quantidade</th>
+                    <th>💵 Valor Total</th>
+                    <th>📈 Média</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for categoria in receitas_por_categoria %}
+                <tr>
+                    <td><span class="categoria-tag">{{ categoria.categoria }}</span></td>
+                    <td>{{ categoria.quantidade }}</td>
+                    <td class="valor-positivo">R$ {{ categoria.total|floatformat:2 }}</td>
+                    <td class="valor-positivo">R$ {{ categoria.total|floatformat:2 }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 3rem; font-size: 1.2rem; color: #6c757d;">
+                        📭 Nenhuma receita encontrada
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-container">
+        <h3>📉 Despesas por Categoria</h3>
+        <table class="financeiro-table">
+            <thead>
+                <tr>
+                    <th>🏷️ Categoria</th>
+                    <th>📊 Quantidade</th>
+                    <th>💵 Valor Total</th>
+                    <th>📈 Média</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for categoria in despesas_por_categoria %}
+                <tr>
+                    <td><span class="categoria-tag">{{ categoria.categoria }}</span></td>
+                    <td>{{ categoria.quantidade }}</td>
+                    <td class="valor-negativo">R$ {{ categoria.total|floatformat:2 }}</td>
+                    <td class="valor-negativo">R$ {{ categoria.total|floatformat:2 }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 3rem; font-size: 1.2rem; color: #6c757d;">
+                        📭 Nenhuma despesa encontrada
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-container">
+        <h3>💰 Últimas Receitas</h3>
+        <table class="financeiro-table">
+            <thead>
+                <tr>
+                    <th>📝 Descrição</th>
+                    <th>🏷️ Categoria</th>
+                    <th>📅 Data</th>
+                    <th>💵 Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for receita in receitas %}
+                <tr>
+                    <td><strong>{{ receita.descricao }}</strong></td>
+                    <td><span class="categoria-tag">{{ receita.categoria }}</span></td>
+                    <td>{{ receita.data|date:"d/m/Y" }}</td>
+                    <td class="valor-positivo">R$ {{ receita.valor|floatformat:2 }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 3rem; font-size: 1.2rem; color: #6c757d;">
+                        📭 Nenhuma receita encontrada
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-container">
+        <h3>💸 Últimas Despesas</h3>
+        <table class="financeiro-table">
+            <thead>
+                <tr>
+                    <th>📝 Descrição</th>
+                    <th>🏷️ Categoria</th>
+                    <th>📅 Data</th>
+                    <th>💵 Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for despesa in despesas %}
+                <tr>
+                    <td><strong>{{ despesa.descricao }}</strong></td>
+                    <td><span class="categoria-tag">{{ despesa.categoria }}</span></td>
+                    <td>{{ despesa.data|date:"d/m/Y" }}</td>
+                    <td class="valor-negativo">R$ {{ despesa.valor|floatformat:2 }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 3rem; font-size: 1.2rem; color: #6c757d;">
+                        📭 Nenhuma despesa encontrada
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div style="text-align: center;">
+        <a href="{% url 'relatorios_dashboard' %}" class="btn-voltar">
+            ← Voltar aos Relatórios
+        </a>
+    </div>
+</div>
+{% endblock %} 

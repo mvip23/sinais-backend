@@ -1,0 +1,11 @@
+{% extends "admin/base_site.html" %}
+{% block extrahead %}
+    {{ block.super }}
+    <script src="{% static 'voice.js' %}"></script>
+{% endblock %}
+{% block branding %}
+  <h1 id="site-name">
+    <a href="{% url 'admin:index' %}">ERP JAM Admin</a>
+    | <a href="/dashboard/" style="font-size: 16px;">Dashboard</a>
+  </h1>
+{% endblock %} 

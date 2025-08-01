@@ -1,0 +1,45 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+  <div class="dashboard-container" style="max-width:100%;margin:2rem auto;padding:2rem;background:#fff;border-radius:10px;box-shadow:0 2px 8px #0001;">
+    <h2 class="dashboard-title" style="text-align:center;margin-bottom:2rem;">Financeiro</h2>
+    <div style="display: flex; justify-content: space-between; margin-bottom: 2rem;">
+      <h3>Receitas</h3>
+      <a href="#" class="btn btn-success">+ Nova Receita</a>
+    </div>
+    <table style="width:100%;margin-bottom:2rem;">
+      <thead><tr><th>Descrição</th><th>Valor</th><th>Data</th><th>Categoria</th></tr></thead>
+      <tbody>
+        {% for receita in receitas %}
+        <tr>
+          <td>{{ receita.descricao }}</td>
+          <td>R$ {{ receita.valor }}</td>
+          <td>{{ receita.data }}</td>
+          <td>{{ receita.categoria }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" style="text-align:center;">Nenhuma receita cadastrada.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div style="display: flex; justify-content: space-between; margin-bottom: 2rem;">
+      <h3>Despesas</h3>
+      <a href="#" class="btn btn-danger">+ Nova Despesa</a>
+    </div>
+    <table style="width:100%;">
+      <thead><tr><th>Descrição</th><th>Valor</th><th>Data</th><th>Categoria</th></tr></thead>
+      <tbody>
+        {% for despesa in despesas %}
+        <tr>
+          <td>{{ despesa.descricao }}</td>
+          <td>R$ {{ despesa.valor }}</td>
+          <td>{{ despesa.data }}</td>
+          <td>{{ despesa.categoria }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" style="text-align:center;">Nenhuma despesa cadastrada.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %} 

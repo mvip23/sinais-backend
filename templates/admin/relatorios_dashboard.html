@@ -1,0 +1,127 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}Relatórios - ERP{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        .relatorios-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .relatorios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .relatorio-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            text-decoration: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .relatorio-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(102,126,234,0.3);
+            color: white;
+            text-decoration: none;
+        }
+        .relatorio-card h3 {
+            margin: 0 0 1rem 0;
+            font-size: 1.5rem;
+        }
+        .relatorio-card p {
+            margin: 0;
+            opacity: 0.9;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="relatorios-container">
+    <h1 style="text-align: center; margin-bottom: 2rem; color: #333;">📊 Relatórios do Sistema</h1>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_vendas }}</div>
+            <p>Total de Vendas</p>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ total_clientes }}</div>
+            <p>Clientes Cadastrados</p>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ total_os }}</div>
+            <p>Ordens de Serviço</p>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ total_produtos }}</div>
+            <p>Produtos</p>
+        </div>
+    </div>
+    
+    <div class="relatorios-grid">
+        <a href="{% url 'relatorio_vendas' %}" class="relatorio-card">
+            <h3>💰 Relatório de Vendas</h3>
+            <p>Análise detalhada de vendas, receitas e performance</p>
+        </a>
+        
+        <a href="{% url 'relatorio_estoque' %}" class="relatorio-card">
+            <h3>📦 Relatório de Estoque</h3>
+            <p>Controle de estoque e produtos com baixa quantidade</p>
+        </a>
+        
+        <a href="{% url 'relatorio_financeiro' %}" class="relatorio-card">
+            <h3>💳 Relatório Financeiro</h3>
+            <p>Receitas, despesas e balanço financeiro</p>
+        </a>
+        
+        <a href="{% url 'admin:clientes_cliente_changelist' %}" class="relatorio-card">
+            <h3>👥 Relatório de Clientes</h3>
+            <p>Análise de clientes e histórico de compras</p>
+        </a>
+        
+        <a href="{% url 'admin:ordens_servico_ordemservico_changelist' %}" class="relatorio-card">
+            <h3>🔧 Relatório de OS</h3>
+            <p>Status e performance das ordens de serviço</p>
+        </a>
+        
+        <a href="{% url 'admin:produtos_produto_changelist' %}" class="relatorio-card">
+            <h3>🛍️ Relatório de Produtos</h3>
+            <p>Análise de produtos e performance de vendas</p>
+        </a>
+    </div>
+    
+    <div style="text-align: center; margin-top: 3rem;">
+        <a href="{% url 'dashboard' %}" style="background: #667eea; color: white; padding: 1rem 2rem; border-radius: 10px; text-decoration: none;">
+            ← Voltar ao Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %} 

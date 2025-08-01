@@ -1,0 +1,337 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}Relatório de Estoque - ERP{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: #333 !important;
+        }
+        .relatorio-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        .relatorio-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 3px solid #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: -2rem -2rem 3rem -2rem;
+        }
+        .relatorio-header h1 {
+            font-size: 3rem;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .relatorio-header p {
+            font-size: 1.2rem;
+            margin: 1rem 0 0 0;
+            opacity: 0.9;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(102,126,234,0.3);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+        .stat-card:hover::before {
+            transform: translateX(100%);
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .stat-card p {
+            font-size: 1.3rem;
+            margin: 0;
+            opacity: 0.9;
+        }
+        .table-container {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 2px solid #dee2e6;
+        }
+        .table-container h3 {
+            color: #495057;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: bold;
+        }
+        .estoque-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .estoque-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .estoque-table td {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid #eee;
+            font-size: 1rem;
+        }
+        .estoque-table tr:hover {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            transform: scale(1.01);
+            transition: all 0.3s ease;
+        }
+        .estoque-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        .baixo-estoque {
+            background: linear-gradient(135deg, #ffe6e6 0%, #ffcccc 100%) !important;
+            color: #d63031 !important;
+            font-weight: bold;
+            border-left: 4px solid #d63031;
+        }
+        .baixo-estoque:hover {
+            background: linear-gradient(135deg, #ffcccc 0%, #ffb3b3 100%) !important;
+        }
+        .status-baixo {
+            background: linear-gradient(135deg, #d63031 0%, #c0392b 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .status-medio {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .status-bom {
+            background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .btn-voltar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.2rem 3rem;
+            border-radius: 15px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 2rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(102,126,234,0.3);
+        }
+        .btn-voltar:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+            color: white;
+            text-decoration: none;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(102,126,234,0.4);
+        }
+        .produto-nome {
+            font-weight: bold;
+            color: #495057;
+        }
+        .deposito-nome {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .quantidade-critica {
+            color: #d63031;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .quantidade-normal {
+            color: #00b894;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="relatorio-container">
+    <div class="relatorio-header">
+        <h1>📦 Relatório de Estoque</h1>
+        <p>Análise completa do controle de estoque e gestão de produtos</p>
+    </div>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ estoque_items.count }}</div>
+            <p>📦 Total de Itens</p>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ baixo_estoque.count }}</div>
+            <p>🚨 Baixo Estoque</p>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ total_por_deposito.count }}</div>
+            <p>🏢 Depósitos</p>
+        </div>
+    </div>
+    
+    <div class="table-container">
+        <h3>🚨 Produtos com Baixo Estoque (menos de 10 unidades)</h3>
+        <table class="estoque-table">
+            <thead>
+                <tr>
+                    <th>📦 Produto</th>
+                    <th>🏢 Depósito</th>
+                    <th>📊 Quantidade</th>
+                    <th>⚠️ Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in baixo_estoque %}
+                <tr class="baixo-estoque">
+                    <td><span class="produto-nome">{{ item.produto.nome }}</span></td>
+                    <td><span class="deposito-nome">{{ item.deposito.nome }}</span></td>
+                    <td><span class="quantidade-critica">{{ item.quantidade }}</span></td>
+                    <td><span class="status-baixo">⚠️ Crítico</span></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 3rem; font-size: 1.2rem; color: #6c757d;">
+                        ✅ Nenhum produto com baixo estoque
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-container">
+        <h3>📊 Resumo por Depósito</h3>
+        <table class="estoque-table">
+            <thead>
+                <tr>
+                    <th>🏢 Depósito</th>
+                    <th>📦 Total de Produtos</th>
+                    <th>📊 Quantidade Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for deposito in total_por_deposito %}
+                <tr>
+                    <td><span class="deposito-nome">{{ deposito.deposito__nome }}</span></td>
+                    <td><strong>{{ deposito.total_produtos }}</strong></td>
+                    <td><span class="quantidade-normal">{{ deposito.quantidade_total }}</span></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" style="text-align: center; padding: 3rem; font-size: 1.2rem; color: #6c757d;">
+                        📭 Nenhum depósito encontrado
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-container">
+        <h3>📋 Todos os Itens de Estoque</h3>
+        <table class="estoque-table">
+            <thead>
+                <tr>
+                    <th>📦 Produto</th>
+                    <th>🏢 Depósito</th>
+                    <th>📊 Quantidade</th>
+                    <th>📈 Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in estoque_items %}
+                <tr {% if item.quantidade < 10 %}class="baixo-estoque"{% endif %}>
+                    <td><span class="produto-nome">{{ item.produto.nome }}</span></td>
+                    <td><span class="deposito-nome">{{ item.deposito.nome }}</span></td>
+                    <td>
+                        {% if item.quantidade < 10 %}
+                            <span class="quantidade-critica">{{ item.quantidade }}</span>
+                        {% else %}
+                            <span class="quantidade-normal">{{ item.quantidade }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if item.quantidade < 10 %}
+                            <span class="status-baixo">⚠️ Baixo</span>
+                        {% elif item.quantidade < 50 %}
+                            <span class="status-medio">⚡ Médio</span>
+                        {% else %}
+                            <span class="status-bom">✅ Bom</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 3rem; font-size: 1.2rem; color: #6c757d;">
+                        📭 Nenhum item de estoque encontrado
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div style="text-align: center;">
+        <a href="{% url 'relatorios_dashboard' %}" class="btn-voltar">
+            ← Voltar aos Relatórios
+        </a>
+    </div>
+</div>
+{% endblock %} 

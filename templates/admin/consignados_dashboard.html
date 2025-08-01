@@ -1,0 +1,325 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}Dashboard Consignados - ERP{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: #333 !important;
+        }
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 3px solid #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: -2rem -2rem 3rem -2rem;
+        }
+        .dashboard-header h1 {
+            font-size: 3rem;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .dashboard-header p {
+            font-size: 1.2rem;
+            margin: 1rem 0 0 0;
+            opacity: 0.9;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(102,126,234,0.3);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+        .stat-card:hover::before {
+            transform: translateX(100%);
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .stat-card p {
+            font-size: 1.3rem;
+            margin: 0;
+            opacity: 0.9;
+        }
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        .table-container {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 2px solid #dee2e6;
+        }
+        .table-container h3 {
+            color: #495057;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: bold;
+        }
+        .consignados-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .consignados-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .consignados-table td {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid #eee;
+            font-size: 1rem;
+        }
+        .consignados-table tr:hover {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            transform: scale(1.01);
+            transition: all 0.3s ease;
+        }
+        .consignados-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: white;
+        }
+        .status-recebido { background: linear-gradient(135deg, #17a2b8 0%, #138496 100%); }
+        .status-avaliado { background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%); }
+        .status-aprovado { background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%); }
+        .status-em_venda { background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); }
+        .status-vendido { background: linear-gradient(135deg, #6f42c1 0%, #5a2d91 100%); }
+        .status-rejeitado { background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); }
+        .status-devolvido { background: linear-gradient(135deg, #6c757d 0%, #545b62 100%); }
+        .btn-action {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.3);
+        }
+        .btn-action:hover {
+            color: white;
+            text-decoration: none;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102,126,234,0.4);
+        }
+        .alert-warning {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 2px solid #ffc107;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .alert-warning h4 {
+            color: #856404;
+            margin-bottom: 1rem;
+        }
+        .valor-positivo {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .valor-negativo {
+            color: #dc3545;
+            font-weight: bold;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>📦 Dashboard Consignados</h1>
+        <p>Gestão completa de produtos em consignação com transparência total</p>
+    </div>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_consignados }}</div>
+            <p>📦 Total de Consignados</p>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ em_venda }}</div>
+            <p>💰 Em Venda</p>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ vendidos }}</div>
+            <p>🎉 Vendidos</p>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ recebidos }}</div>
+            <p>📥 Recebidos</p>
+        </div>
+    </div>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">R$ {{ valor_total_venda|floatformat:2 }}</div>
+            <p>💵 Valor Total Vendido</p>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">R$ {{ valor_total_repasse|floatformat:2 }}</div>
+            <p>🤝 Valor Total Repasse</p>
+        </div>
+    </div>
+    
+    {% if consignados_antigos %}
+    <div class="alert-warning">
+        <h4>⚠️ Atenção: Consignados Antigos</h4>
+        <p>Os seguintes produtos estão há mais de 30 dias em venda e podem precisar de atenção:</p>
+        <ul>
+            {% for consignado in consignados_antigos %}
+            <li><strong>{{ consignado.codigo }}</strong> - {{ consignado.nome_produto }} ({{ consignado.cliente.nome }})</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    
+    <div class="content-grid">
+        <div class="table-container">
+            <h3>📋 Últimos Consignados</h3>
+            <table class="consignados-table">
+                <thead>
+                    <tr>
+                        <th>🔢 Código</th>
+                        <th>📦 Produto</th>
+                        <th>👤 Cliente</th>
+                        <th>🏪 Loja</th>
+                        <th>📊 Status</th>
+                        <th>💵 Valor</th>
+                        <th>⚡ Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for consignado in ultimos_consignados %}
+                    <tr>
+                        <td><strong>{{ consignado.codigo }}</strong></td>
+                        <td>{{ consignado.nome_produto }}</td>
+                        <td>{{ consignado.cliente.nome }}</td>
+                        <td>{{ consignado.loja.nome }}</td>
+                        <td>
+                            <span class="status-badge status-{{ consignado.status }}">
+                                {{ consignado.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="valor-positivo">R$ {{ consignado.valor_estimado|floatformat:2 }}</td>
+                        <td>
+                            <a href="{% url 'detalhes_consignado' consignado.id %}" class="btn-action">
+                                👁️ Ver
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 3rem; font-size: 1.2rem; color: #6c757d;">
+                            📭 Nenhum consignado encontrado
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="table-container">
+            <h3>📊 Status por Categoria</h3>
+            <table class="consignados-table">
+                <thead>
+                    <tr>
+                        <th>📊 Status</th>
+                        <th>📦 Quantidade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for status in consignados_por_status %}
+                    <tr>
+                        <td>
+                            <span class="status-badge status-{{ status.status }}">
+                                {{ status.status|title }}
+                            </span>
+                        </td>
+                        <td><strong>{{ status.total }}</strong></td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2" style="text-align: center; padding: 2rem; color: #6c757d;">
+                            Nenhum dado disponível
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div style="text-align: center; margin-top: 2rem;">
+        <a href="{% url 'lista_consignados' %}" class="btn-action" style="margin-right: 1rem;">
+            📋 Ver Todos os Consignados
+        </a>
+        <a href="{% url 'relatorio_consignados' %}" class="btn-action" style="margin-right: 1rem;">
+            📊 Relatório Completo
+        </a>
+        <a href="/admin/consignados/consignado/add/" class="btn-action">
+            ➕ Novo Consignado
+        </a>
+    </div>
+</div>
+{% endblock %} 
