@@ -1,1 +1,1 @@
-web: gunicorn empresa_nova.wsgi --log-file - 
+web: python run_migrations.py && gunicorn empresa_nova.wsgi --log-file - 
