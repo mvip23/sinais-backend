@@ -15,6 +15,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     '.railway.app',
     '.up.railway.app',
+    'web-production-84d63.up.railway.app',
     'sistema-jam-production.up.railway.app',
     'sistemajam.com.br',
     'www.sistemajam.com.br'
@@ -74,6 +75,7 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 
 # Configuração de CORS
 CORS_ALLOWED_ORIGINS = [
+    "https://web-production-84d63.up.railway.app",
     "https://sistema-jam-production.up.railway.app",
     "https://sistemajam.com.br",
     "https://www.sistemajam.com.br",
@@ -81,6 +83,7 @@ CORS_ALLOWED_ORIGINS = [
 
 # Configuração de CSRF
 CSRF_TRUSTED_ORIGINS = [
+    "https://web-production-84d63.up.railway.app",
     "https://sistema-jam-production.up.railway.app",
     "https://sistemajam.com.br",
     "https://www.sistemajam.com.br",
