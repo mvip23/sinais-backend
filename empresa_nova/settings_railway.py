@@ -7,22 +7,13 @@ import dj_database_url
 from .settings import *
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True  # Temporariamente True para ver erros
 
 # Configuração da chave secreta
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-^8cg*47v9qe5ye9miybl@qf=xp$z&p_m*g^yb4h0te54b%p@$o')
 
-# Configuração do Railway
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    '.railway.app',
-    '.up.railway.app',
-    'web-production-84d63.up.railway.app',
-    'sistema-jam-production.up.railway.app',
-    'sistemajam.com.br',
-    'www.sistemajam.com.br'
-]
+# Configuração do Railway - Permitir todos os hosts
+ALLOWED_HOSTS = ['*']
 
 # Configuração do banco de dados PostgreSQL do Railway
 DATABASE_URL = os.environ.get('DATABASE_URL')
@@ -54,14 +45,14 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Configuração de segurança
-SECURE_SSL_REDIRECT = True
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SECURE_HSTS_SECONDS = 31536000
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
+# Configuração de segurança - Desabilitar temporariamente
+SECURE_SSL_REDIRECT = False
+SECURE_PROXY_SSL_HEADER = None
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+SECURE_HSTS_SECONDS = 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+SECURE_HSTS_PRELOAD = False
 
 # Configuração de logs
 LOGGING = {
@@ -74,33 +65,19 @@ LOGGING = {
     },
     'root': {
         'handlers': ['console'],
-        'level': 'INFO',
+        'level': 'DEBUG',  # Mudado para DEBUG
     },
 }
 
-# Configuração de email (usar variáveis de ambiente)
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
-EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+# Configuração de email
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# Configuração de CORS
-CORS_ALLOWED_ORIGINS = [
-    "https://web-production-84d63.up.railway.app",
-    "https://sistema-jam-production.up.railway.app",
-    "https://sistemajam.com.br",
-    "https://www.sistemajam.com.br",
-]
+# Configuração de CORS - Permitir tudo temporariamente
+CORS_ALLOWED_ORIGINS = ['*']
+CORS_ALLOW_ALL_ORIGINS = True
 
-# Configuração de CSRF
-CSRF_TRUSTED_ORIGINS = [
-    "https://web-production-84d63.up.railway.app",
-    "https://sistema-jam-production.up.railway.app",
-    "https://sistemajam.com.br",
-    "https://www.sistemajam.com.br",
-]
+# Configuração de CSRF - Permitir tudo temporariamente
+CSRF_TRUSTED_ORIGINS = ['*']
 
 # Configuração de sessão
 SESSION_COOKIE_AGE = 86400  # 24 horas
