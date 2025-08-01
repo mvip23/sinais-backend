@@ -9,6 +9,9 @@ from .settings import *
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+# Configuração da chave secreta
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-^8cg*47v9qe5ye9miybl@qf=xp$z&p_m*g^yb4h0te54b%p@$o')
+
 # Configuração do Railway
 ALLOWED_HOSTS = [
     'localhost',
@@ -22,13 +25,23 @@ ALLOWED_HOSTS = [
 ]
 
 # Configuração do banco de dados PostgreSQL do Railway
-DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
-}
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    }
+else:
+    # Fallback para SQLite se não houver DATABASE_URL
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 # Configuração de arquivos estáticos
 STATIC_URL = '/static/'
