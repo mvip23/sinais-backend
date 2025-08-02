@@ -1,0 +1,379 @@
+{% extends 'website/base.html' %}
+{% load static %}
+
+{% block title %}Realidade Aumentada - Sistema JAM{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-gradient-info text-white">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h1 class="display-4 mb-2">
+                                <i class="fas fa-vr-cardboard me-3"></i>
+                                Realidade Aumentada
+                            </h1>
+                            <p class="lead mb-0">Experiências imersivas e interativas em 3D</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="stats-card bg-white bg-opacity-25 rounded p-3">
+                                <h3 class="text-white mb-0">{{ stats.experiencias_disponiveis }}</h3>
+                                <small class="text-white-50">Experiências disponíveis</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-cube fa-3x text-info mb-3"></i>
+                    <h4 class="text-info">{{ stats.objetos_3d }}</h4>
+                    <p class="text-muted mb-0">Objetos 3D</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-clock fa-3x text-success mb-3"></i>
+                    <h4 class="text-success">{{ stats.tempo_medio_sessao }}</h4>
+                    <p class="text-muted mb-0">Tempo Médio Sessão</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-users fa-3x text-warning mb-3"></i>
+                    <h4 class="text-warning">{{ stats.sessoes_hoje }}</h4>
+                    <p class="text-muted mb-0">Sessões Hoje</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-mobile-alt fa-3x text-primary mb-3"></i>
+                    <h4 class="text-primary">100%</h4>
+                    <p class="text-muted mb-0">Compatibilidade</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Experiências AR -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-cube me-2"></i>
+                        Experiências de Realidade Aumentada
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Visualização de Produto -->
+                        <div class="col-md-4 mb-4">
+                            <div class="ar-experience-card">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-body text-center">
+                                        <div class="ar-icon mb-3">
+                                            <i class="fas fa-box fa-4x text-primary"></i>
+                                        </div>
+                                        <h5 class="text-primary">Visualização de Produto</h5>
+                                        <p class="text-muted">Veja produtos em 3D antes de comprar</p>
+                                        <div class="ar-features mb-3">
+                                            <span class="badge bg-success me-1">360°</span>
+                                            <span class="badge bg-info me-1">Interativo</span>
+                                            <span class="badge bg-warning">Realista</span>
+                                        </div>
+                                        <button class="btn btn-primary btn-sm">
+                                            <i class="fas fa-play me-2"></i>
+                                            Experimentar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gestão de Estoque -->
+                        <div class="col-md-4 mb-4">
+                            <div class="ar-experience-card">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-body text-center">
+                                        <div class="ar-icon mb-3">
+                                            <i class="fas fa-warehouse fa-4x text-success"></i>
+                                        </div>
+                                        <h5 class="text-success">Gestão de Estoque</h5>
+                                        <p class="text-muted">Controle visual do estoque em tempo real</p>
+                                        <div class="ar-features mb-3">
+                                            <span class="badge bg-success me-1">Tempo Real</span>
+                                            <span class="badge bg-info me-1">3D</span>
+                                            <span class="badge bg-warning">Analytics</span>
+                                        </div>
+                                        <button class="btn btn-success btn-sm">
+                                            <i class="fas fa-play me-2"></i>
+                                            Experimentar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Treinamento -->
+                        <div class="col-md-4 mb-4">
+                            <div class="ar-experience-card">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-body text-center">
+                                        <div class="ar-icon mb-3">
+                                            <i class="fas fa-graduation-cap fa-4x text-warning"></i>
+                                        </div>
+                                        <h5 class="text-warning">Treinamento Imersivo</h5>
+                                        <p class="text-muted">Aprenda com experiências interativas</p>
+                                        <div class="ar-features mb-3">
+                                            <span class="badge bg-success me-1">Interativo</span>
+                                            <span class="badge bg-info me-1">Guia</span>
+                                            <span class="badge bg-warning">Progresso</span>
+                                        </div>
+                                        <button class="btn btn-warning btn-sm">
+                                            <i class="fas fa-play me-2"></i>
+                                            Experimentar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Objetos 3D e Sessões -->
+    <div class="row">
+        <!-- Objetos 3D -->
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-cube me-2"></i>
+                        Objetos 3D Disponíveis
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for objeto in objetos %}
+                    <div class="object-3d-item mb-3 p-3 border rounded">
+                        <div class="row align-items-center">
+                            <div class="col-2">
+                                <i class="fas fa-cube fa-2x text-info"></i>
+                            </div>
+                            <div class="col-7">
+                                <h6 class="mb-1">{{ objeto.nome }}</h6>
+                                <small class="text-muted">
+                                    Escala: {{ objeto.escala }}x | 
+                                    Pos: ({{ objeto.posicao_x }}, {{ objeto.posicao_y }}, {{ objeto.posicao_z }})
+                                </small>
+                            </div>
+                            <div class="col-3 text-end">
+                                <button class="btn btn-outline-info btn-sm">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sessões Recentes -->
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i>
+                        Sessões Recentes
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for sessao in sessoes_recentes %}
+                    <div class="session-item mb-3 p-3 border rounded">
+                        <div class="row align-items-center">
+                            <div class="col-2">
+                                <i class="fas fa-vr-cardboard fa-2x text-success"></i>
+                            </div>
+                            <div class="col-7">
+                                <h6 class="mb-1">{{ sessao.experiencia.nome }}</h6>
+                                <small class="text-muted">
+                                    {{ sessao.data_inicio|date:"d/m/Y H:i" }} | 
+                                    {% if sessao.duracao %}
+                                        {{ sessao.duracao }}s
+                                    {% else %}
+                                        Em andamento
+                                    {% endif %}
+                                </small>
+                            </div>
+                            <div class="col-3 text-end">
+                                <span class="badge bg-success">Ativa</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-vr-cardboard fa-3x mb-3"></i>
+                        <p>Nenhuma sessão recente</p>
+                        <button class="btn btn-success">
+                            <i class="fas fa-play me-2"></i>
+                            Iniciar Experiência
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AR Demo -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-mobile-alt me-2"></i>
+                        Demo AR - Teste no seu dispositivo
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h6 class="text-warning">Como usar:</h6>
+                            <ol class="text-muted">
+                                <li>Abra a câmera do seu dispositivo</li>
+                                <li>Aponte para um marcador AR</li>
+                                <li>Interaja com os objetos 3D</li>
+                                <li>Use gestos para navegar</li>
+                            </ol>
+                            <div class="ar-tips">
+                                <h6 class="text-info">Dicas:</h6>
+                                <ul class="text-muted">
+                                    <li>Boa iluminação para melhor detecção</li>
+                                    <li>Mantenha o dispositivo estável</li>
+                                    <li>Use fones para áudio 3D</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-center">
+                            <div class="ar-demo-area">
+                                <div class="ar-marker-placeholder">
+                                    <i class="fas fa-qrcode fa-5x text-muted"></i>
+                                    <p class="text-muted mt-2">Marcador AR</p>
+                                </div>
+                                <button class="btn btn-warning btn-lg mt-3">
+                                    <i class="fas fa-camera me-2"></i>
+                                    Ativar AR
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.ar-experience-card {
+    transition: transform 0.3s ease;
+}
+
+.ar-experience-card:hover {
+    transform: translateY(-5px);
+}
+
+.ar-icon {
+    background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.object-3d-item, .session-item {
+    background: #f8f9fa;
+    transition: background-color 0.3s ease;
+}
+
+.object-3d-item:hover, .session-item:hover {
+    background: #e9ecef;
+}
+
+.ar-marker-placeholder {
+    background: #f8f9fa;
+    border: 2px dashed #dee2e6;
+    border-radius: 10px;
+    padding: 40px;
+    margin: 20px 0;
+}
+
+.ar-tips ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.ar-tips li:before {
+    content: "✓ ";
+    color: #28a745;
+    font-weight: bold;
+}
+</style>
+
+<script>
+// Simular ativação de AR
+document.querySelector('.btn-warning.btn-lg').addEventListener('click', function() {
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        // Simular acesso à câmera
+        alert('AR ativado! Aponte a câmera para um marcador AR.');
+    } else {
+        alert('AR não suportado neste dispositivo.');
+    }
+});
+
+// Animações para os cards
+document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.ar-experience-card');
+    cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+        card.style.animation = 'fadeInUp 0.6s ease forwards';
+    });
+});
+
+// CSS Animation
+const style = document.createElement('style');
+style.textContent = `
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+`;
+document.head.appendChild(style);
+</script>
+{% endblock %} 
