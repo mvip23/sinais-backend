@@ -1,0 +1,426 @@
+{% extends 'website/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-gradient-info text-white">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h1 class="display-4 mb-2">
+                                <i class="fas fa-home me-3"></i>
+                                Gestão Pessoal
+                            </h1>
+                            <p class="lead mb-0">Controle suas despesas pessoais, contas da casa, carro e muito mais. Totalmente gratuito!</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="stats-card bg-white bg-opacity-25 rounded p-3">
+                                <h3 class="text-white mb-0">{{ stats.saldo_mes }}</h3>
+                                <small class="text-white-50">Saldo do Mês</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-arrow-down fa-3x text-danger mb-3"></i>
+                    <h4 class="text-danger">{{ stats.despesas_mes }}</h4>
+                    <p class="text-muted mb-0">Despesas do Mês</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-arrow-up fa-3x text-success mb-3"></i>
+                    <h4 class="text-success">{{ stats.receitas_mes }}</h4>
+                    <p class="text-muted mb-0">Receitas do Mês</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                    <h4 class="text-warning">{{ stats.contas_pendentes }}</h4>
+                    <p class="text-muted mb-0">Contas Pendentes</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-piggy-bank fa-3x text-primary mb-3"></i>
+                    <h4 class="text-primary">{{ stats.economias }}</h4>
+                    <p class="text-muted mb-0">Economias</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ações Rápidas -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>
+                        Ações Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-outline-primary w-100" onclick="novaDespesa()">
+                                <i class="fas fa-plus me-2"></i>
+                                Nova Despesa
+                            </button>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-outline-success w-100" onclick="novaReceita()">
+                                <i class="fas fa-plus me-2"></i>
+                                Nova Receita
+                            </button>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-outline-warning w-100" onclick="gerarRelatorio()">
+                                <i class="fas fa-chart-bar me-2"></i>
+                                Gerar Relatório
+                            </button>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-outline-info w-100" onclick="configurarLembretes()">
+                                <i class="fas fa-bell me-2"></i>
+                                Lembretes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Módulos de Gestão -->
+    <div class="row">
+        <!-- Despesas Domésticas -->
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-home me-2"></i>
+                        Despesas Domésticas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Categoria</th>
+                                    <th>Valor</th>
+                                    <th>Status</th>
+                                    <th>Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for despesa in despesas_domesticas %}
+                                <tr>
+                                    <td>{{ despesa.categoria }}</td>
+                                    <td><strong>{{ despesa.valor }}</strong></td>
+                                    <td>
+                                        {% if despesa.status == 'Pago' %}
+                                            <span class="badge bg-success">{{ despesa.status }}</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">{{ despesa.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contas Pessoais -->
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-credit-card me-2"></i>
+                        Contas Pessoais
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Descrição</th>
+                                    <th>Valor</th>
+                                    <th>Vencimento</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for conta in contas_pessoais %}
+                                <tr>
+                                    <td>{{ conta.descricao }}</td>
+                                    <td><strong>{{ conta.valor }}</strong></td>
+                                    <td>{{ conta.vencimento }}</td>
+                                    <td>
+                                        {% if conta.status == 'Pago' %}
+                                            <span class="badge bg-success">{{ conta.status }}</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">{{ conta.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Carro e Combustível -->
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-car me-2"></i>
+                        Carro e Combustível
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Tipo</th>
+                                    <th>Valor</th>
+                                    <th>Data</th>
+                                    <th>KM</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for gasto in carro_combustivel %}
+                                <tr>
+                                    <td>{{ gasto.tipo }}</td>
+                                    <td><strong>{{ gasto.valor }}</strong></td>
+                                    <td>{{ gasto.data }}</td>
+                                    <td>{{ gasto.km }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Despesas Escolares -->
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-graduation-cap me-2"></i>
+                        Despesas Escolares
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Valor</th>
+                                    <th>Status</th>
+                                    <th>Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for despesa in despesas_escolares %}
+                                <tr>
+                                    <td>{{ despesa.item }}</td>
+                                    <td><strong>{{ despesa.valor }}</strong></td>
+                                    <td>
+                                        {% if despesa.status == 'Pago' %}
+                                            <span class="badge bg-success">{{ despesa.status }}</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">{{ despesa.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráfico de Despesas -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-pie me-2"></i>
+                        Análise de Despesas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="chart-container" style="height: 300px;">
+                                <canvas id="despesasChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex flex-column">
+                                <div class="mb-3">
+                                    <h6 class="text-success">Dicas de Economia</h6>
+                                    <ul class="list-unstyled text-muted">
+                                        <li><i class="fas fa-check text-success me-2"></i>Reduza gastos com delivery</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Compare preços de combustível</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Use cupons de desconto</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Planeje compras mensais</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h6 class="text-primary">Metas do Mês</h6>
+                                    <div class="progress mb-2">
+                                        <div class="progress-bar bg-success" style="width: 75%">75%</div>
+                                    </div>
+                                    <small class="text-muted">Economia: R$ 1.700 de R$ 2.000</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    border-top: none;
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Gráfico de despesas
+const ctx = document.getElementById('despesasChart').getContext('2d');
+const despesasChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Despesas Domésticas', 'Contas Pessoais', 'Carro/Combustível', 'Despesas Escolares'],
+        datasets: [{
+            data: [2350, 758, 595, 835],
+            backgroundColor: [
+                '#28a745',
+                '#ffc107',
+                '#dc3545',
+                '#17a2b8'
+            ],
+            borderWidth: 2,
+            borderColor: '#fff'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+            }
+        }
+    }
+});
+
+// Funções para ações rápidas
+function novaDespesa() {
+    Swal.fire({
+        title: 'Nova Despesa',
+        text: 'Funcionalidade em desenvolvimento',
+        icon: 'info',
+        confirmButtonText: 'OK'
+    });
+}
+
+function novaReceita() {
+    Swal.fire({
+        title: 'Nova Receita',
+        text: 'Funcionalidade em desenvolvimento',
+        icon: 'info',
+        confirmButtonText: 'OK'
+    });
+}
+
+function gerarRelatorio() {
+    Swal.fire({
+        title: 'Gerando Relatório...',
+        text: 'Preparando relatório pessoal',
+        icon: 'info',
+        showConfirmButton: false,
+        timer: 2000
+    }).then(() => {
+        Swal.fire('Sucesso!', 'Relatório gerado com sucesso!', 'success');
+    });
+}
+
+function configurarLembretes() {
+    Swal.fire({
+        title: 'Configurar Lembretes',
+        text: 'Funcionalidade em desenvolvimento',
+        icon: 'info',
+        confirmButtonText: 'OK'
+    });
+}
+
+// Incluir SweetAlert2
+if (typeof Swal === 'undefined') {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
+    document.head.appendChild(script);
+}
+</script>
+{% endblock %} 

@@ -1,0 +1,370 @@
+{% extends 'website/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-gradient-dark text-white">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h1 class="display-4 mb-2">
+                                <i class="fas fa-cog me-3"></i>
+                                Configurações
+                            </h1>
+                            <p class="lead mb-0">Gerencie usuários, relatórios, configurações de voz e dados da empresa</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="stats-card bg-white bg-opacity-25 rounded p-3">
+                                <h3 class="text-white mb-0">{{ usuarios|length }}</h3>
+                                <small class="text-white-50">Usuários Ativos</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Configurações da Empresa -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-building me-2"></i>
+                        Configurações da Empresa
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Nome da Empresa:</label>
+                                <input type="text" class="form-control" value="{{ empresa.nome }}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">CNPJ:</label>
+                                <input type="text" class="form-control" value="{{ empresa.cnpj }}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Endereço:</label>
+                                <textarea class="form-control" rows="2">{{ empresa.endereco }}</textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Telefone:</label>
+                                <input type="text" class="form-control" value="{{ empresa.telefone }}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email:</label>
+                                <input type="email" class="form-control" value="{{ empresa.email }}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Website:</label>
+                                <input type="text" class="form-control" value="{{ empresa.website }}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Logo da Empresa:</label>
+                                <div class="d-flex align-items-center">
+                                    <img src="{{ empresa.logo }}" alt="Logo" class="me-3" style="width: 60px; height: 60px; object-fit: contain;">
+                                    <button class="btn btn-outline-primary">
+                                        <i class="fas fa-upload me-2"></i>Alterar Logo
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <button class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Salvar Configurações
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gestão de Usuários -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-users me-2"></i>
+                        Gestão de Usuários
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Email</th>
+                                    <th>Nível</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for usuario in usuarios %}
+                                <tr>
+                                    <td>{{ usuario.nome }}</td>
+                                    <td>{{ usuario.email }}</td>
+                                    <td>
+                                        {% if usuario.nivel == 'Administrador' %}
+                                            <span class="badge bg-danger">{{ usuario.nivel }}</span>
+                                        {% elif usuario.nivel == 'Gerente' %}
+                                            <span class="badge bg-warning">{{ usuario.nivel }}</span>
+                                        {% else %}
+                                            <span class="badge bg-info">{{ usuario.nivel }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Ativo</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <button class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-warning">
+                                                <i class="fas fa-key"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-end mt-3">
+                        <button class="btn btn-success">
+                            <i class="fas fa-user-plus me-2"></i>Novo Usuário
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Relatórios -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>
+                        Relatórios Disponíveis
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for relatorio in relatorios %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas fa-file-alt text-primary me-2"></i>
+                                {{ relatorio }}
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary me-2">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-success">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="text-end mt-3">
+                        <button class="btn btn-warning">
+                            <i class="fas fa-plus me-2"></i>Novo Relatório
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Configurações de Voz -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-microphone me-2"></i>
+                        Configurações de Voz
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Ativar Comandos de Voz:</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" {% if configuracoes_voz.ativo %}checked{% endif %}>
+                            <label class="form-check-label">Sistema de voz ativo</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Idioma:</label>
+                        <select class="form-select">
+                            <option value="pt-BR" selected>Português (Brasil)</option>
+                            <option value="en-US">English (US)</option>
+                            <option value="es-ES">Español</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Velocidade de Fala:</label>
+                        <select class="form-select">
+                            <option value="slow">Lenta</option>
+                            <option value="normal" selected>Normal</option>
+                            <option value="fast">Rápida</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Comandos Ativos:</label>
+                        <div class="list-group">
+                            {% for comando in configuracoes_voz.comandos_ativos %}
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>{{ comando }}</span>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" checked>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <button class="btn btn-info">
+                            <i class="fas fa-save me-2"></i>Salvar Configurações
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Backup e Segurança -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        Backup e Segurança
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="text-center mb-3">
+                                <i class="fas fa-database fa-3x text-primary mb-3"></i>
+                                <h6>Backup Automático</h6>
+                                <p class="text-muted">Último backup: 02/08/2024 14:30</p>
+                                <button class="btn btn-outline-primary">
+                                    <i class="fas fa-download me-2"></i>Fazer Backup
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center mb-3">
+                                <i class="fas fa-lock fa-3x text-success mb-3"></i>
+                                <h6>Segurança</h6>
+                                <p class="text-muted">Sistema protegido</p>
+                                <button class="btn btn-outline-success">
+                                    <i class="fas fa-cog me-2"></i>Configurar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center mb-3">
+                                <i class="fas fa-history fa-3x text-warning mb-3"></i>
+                                <h6>Logs de Atividade</h6>
+                                <p class="text-muted">Última atividade: 2 min atrás</p>
+                                <button class="btn btn-outline-warning">
+                                    <i class="fas fa-eye me-2"></i>Visualizar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    border-top: none;
+}
+
+.list-group-item {
+    border: none;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+</style>
+
+<script>
+// Funções para configurações
+function salvarConfiguracoes() {
+    Swal.fire({
+        title: 'Salvando...',
+        text: 'Salvando configurações da empresa',
+        icon: 'info',
+        showConfirmButton: false,
+        timer: 1500
+    }).then(() => {
+        Swal.fire('Sucesso!', 'Configurações salvas com sucesso!', 'success');
+    });
+}
+
+function novoUsuario() {
+    Swal.fire({
+        title: 'Novo Usuário',
+        text: 'Funcionalidade em desenvolvimento',
+        icon: 'info',
+        confirmButtonText: 'OK'
+    });
+}
+
+function fazerBackup() {
+    Swal.fire({
+        title: 'Fazendo Backup...',
+        text: 'Preparando backup do sistema',
+        icon: 'info',
+        showConfirmButton: false,
+        timer: 3000
+    }).then(() => {
+        Swal.fire('Sucesso!', 'Backup realizado com sucesso!', 'success');
+    });
+}
+
+// Incluir SweetAlert2
+if (typeof Swal === 'undefined') {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
+    document.head.appendChild(script);
+}
+</script>
+{% endblock %} 

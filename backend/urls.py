@@ -13,7 +13,8 @@ def dashboard_view(request):
             {'name': 'Clientes', 'url': '/sistema/clientes/', 'icon': 'fas fa-users', 'color': 'info'},
             {'name': 'Estoque', 'url': '/sistema/estoque/', 'icon': 'fas fa-warehouse', 'color': 'secondary'},
             {'name': 'Ordem de Serviço', 'url': '/sistema/ordem-servico/', 'icon': 'fas fa-tools', 'color': 'danger'},
-            {'name': 'Relatórios', 'url': '/sistema/relatorios/', 'icon': 'fas fa-chart-bar', 'color': 'dark'},
+            {'name': 'Gestão Pessoal', 'url': '/sistema/gestao-pessoal/', 'icon': 'fas fa-home', 'color': 'info'},
+            {'name': 'Configurações', 'url': '/sistema/configuracoes/', 'icon': 'fas fa-cog', 'color': 'dark'},
             {'name': 'IA Assistant', 'url': '/ai/', 'icon': 'fas fa-robot', 'color': 'primary'},
             {'name': 'Realidade Aumentada', 'url': '/ar/', 'icon': 'fas fa-vr-cardboard', 'color': 'info'},
         ]
@@ -113,17 +114,75 @@ def ordem_servico_view(request):
         ]
     })
 
-def relatorios_view(request):
-    """Módulo de Relatórios"""
-    return render(request, 'backend/relatorios.html', {
-        'title': 'Relatórios - Sistema JAM',
-        'reports': [
+def gestao_pessoal_view(request):
+    """Módulo de Gestão Pessoal Gratuita"""
+    return render(request, 'backend/gestao_pessoal.html', {
+        'title': 'Gestão Pessoal - Sistema JAM',
+        'stats': {
+            'despesas_mes': 'R$ 3.500',
+            'receitas_mes': 'R$ 5.200',
+            'saldo_mes': 'R$ 1.700',
+            'contas_pendentes': 'R$ 850',
+            'economias': 'R$ 2.300'
+        },
+        'despesas_domesticas': [
+            {'categoria': 'Alimentação', 'valor': 'R$ 800', 'status': 'Pago'},
+            {'categoria': 'Energia', 'valor': 'R$ 150', 'status': 'Pendente'},
+            {'categoria': 'Água', 'valor': 'R$ 80', 'status': 'Pago'},
+            {'categoria': 'Internet', 'valor': 'R$ 120', 'status': 'Pendente'},
+            {'categoria': 'Aluguel', 'valor': 'R$ 1.200', 'status': 'Pago'}
+        ],
+        'contas_pessoais': [
+            {'descricao': 'Cartão de Crédito', 'valor': 'R$ 450', 'vencimento': '15/08/2024', 'status': 'Pendente'},
+            {'descricao': 'Seguro Carro', 'valor': 'R$ 180', 'vencimento': '20/08/2024', 'status': 'Pendente'},
+            {'descricao': 'Academia', 'valor': 'R$ 89', 'vencimento': '10/08/2024', 'status': 'Pago'},
+            {'descricao': 'Netflix', 'valor': 'R$ 39', 'vencimento': '05/08/2024', 'status': 'Pago'}
+        ],
+        'carro_combustivel': [
+            {'tipo': 'Gasolina', 'valor': 'R$ 200', 'data': '01/08/2024', 'km': '45.250'},
+            {'tipo': 'Óleo', 'valor': 'R$ 45', 'data': '15/07/2024', 'km': '44.800'},
+            {'tipo': 'Manutenção', 'valor': 'R$ 350', 'data': '10/07/2024', 'km': '44.500'}
+        ],
+        'despesas_escolares': [
+            {'item': 'Mensalidade', 'valor': 'R$ 450', 'status': 'Pago'},
+            {'item': 'Material Escolar', 'valor': 'R$ 120', 'status': 'Pendente'},
+            {'item': 'Uniforme', 'valor': 'R$ 85', 'status': 'Pago'},
+            {'item': 'Transporte', 'valor': 'R$ 180', 'status': 'Pendente'}
+        ]
+    })
+
+def configuracoes_view(request):
+    """Módulo de Configurações Unificado"""
+    return render(request, 'backend/configuracoes.html', {
+        'title': 'Configurações - Sistema JAM',
+        'empresa': {
+            'nome': 'Sistema JAM',
+            'cnpj': '12.345.678/0001-90',
+            'endereco': 'Rua das Inovações, 123 - São Paulo, SP',
+            'telefone': '(11) 99999-9999',
+            'email': 'contato@sistemajam.com.br',
+            'website': 'www.sistemajam.com.br',
+            'logo': '/static/images/logo.png'
+        },
+        'usuarios': [
+            {'nome': 'Admin Master', 'email': 'admin@sistemajam.com.br', 'nivel': 'Administrador'},
+            {'nome': 'João Silva', 'email': 'joao@sistemajam.com.br', 'nivel': 'Gerente'},
+            {'nome': 'Maria Santos', 'email': 'maria@sistemajam.com.br', 'nivel': 'Operador'}
+        ],
+        'relatorios': [
             'Relatório de Vendas',
             'Relatório Financeiro',
             'Relatório de Estoque',
             'Relatório de Clientes',
-            'Relatório de Produtividade'
-        ]
+            'Relatório de Produtividade',
+            'Relatório de Ordens de Serviço'
+        ],
+        'configuracoes_voz': {
+            'ativo': True,
+            'idioma': 'Português',
+            'velocidade': 'Normal',
+            'comandos_ativos': ['Nova venda', 'Buscar cliente', 'Gerar relatório', 'Abrir estoque']
+        }
     })
 
 urlpatterns = [
@@ -134,5 +193,6 @@ urlpatterns = [
     path('clientes/', clientes_view, name='clientes'),
     path('estoque/', estoque_view, name='estoque'),
     path('ordem-servico/', ordem_servico_view, name='ordem_servico'),
-    path('relatorios/', relatorios_view, name='relatorios'),
+    path('gestao-pessoal/', gestao_pessoal_view, name='gestao_pessoal'),
+    path('configuracoes/', configuracoes_view, name='configuracoes'),
 ] 

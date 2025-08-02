@@ -33,12 +33,14 @@ def gerar_pdf_ordem_servico(dados_ordem, caminho_saida):
     story.append(Paragraph("ORDEM DE SERVIÇO", title_style))
     story.append(Spacer(1, 20))
     
-    # Informações da empresa
+    # Informações da empresa (vindas das configurações)
     empresa_data = [
-        ['SISTEMA JAM', ''],
-        ['Endereço: Rua das Inovações, 123', ''],
-        ['Telefone: (11) 99999-9999', ''],
-        ['Email: contato@sistemajam.com.br', '']
+        [dados_ordem.get('empresa_nome', 'SISTEMA JAM'), ''],
+        [f"CNPJ: {dados_ordem.get('empresa_cnpj', '12.345.678/0001-90')}", ''],
+        [f"Endereço: {dados_ordem.get('empresa_endereco', 'Rua das Inovações, 123')}", ''],
+        [f"Telefone: {dados_ordem.get('empresa_telefone', '(11) 99999-9999')}", ''],
+        [f"Email: {dados_ordem.get('empresa_email', 'contato@sistemajam.com.br')}", ''],
+        [f"Website: {dados_ordem.get('empresa_website', 'www.sistemajam.com.br')}", '']
     ]
     
     empresa_table = Table(empresa_data, colWidths=[4*inch, 2*inch])
