@@ -1,0 +1,315 @@
+{% extends 'website/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-gradient-success text-white">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h1 class="display-4 mb-2">
+                                <i class="fas fa-dollar-sign me-3"></i>
+                                Financeiro
+                            </h1>
+                            <p class="lead mb-0">Gestão financeira completa e inteligente</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="stats-card bg-white bg-opacity-25 rounded p-3">
+                                <h3 class="text-white mb-0">{{ stats.lucro_mes }}</h3>
+                                <small class="text-white-50">Lucro do Mês</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-arrow-up fa-3x text-success mb-3"></i>
+                    <h4 class="text-success">{{ stats.receitas_mes }}</h4>
+                    <p class="text-muted mb-0">Receitas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-arrow-down fa-3x text-danger mb-3"></i>
+                    <h4 class="text-danger">{{ stats.despesas_mes }}</h4>
+                    <p class="text-muted mb-0">Despesas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-hand-holding-usd fa-3x text-warning mb-3"></i>
+                    <h4 class="text-warning">{{ stats.contas_receber }}</h4>
+                    <p class="text-muted mb-0">A Receber</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-credit-card fa-3x text-info mb-3"></i>
+                    <h4 class="text-info">{{ stats.contas_pagar }}</h4>
+                    <p class="text-muted mb-0">A Pagar</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos e Análises -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i>
+                        Análise Financeira
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="financeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-calculator me-2"></i>
+                        Indicadores
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="indicator-item mb-3">
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">Margem de Lucro</span>
+                            <span class="text-success fw-bold">32%</span>
+                        </div>
+                        <div class="progress mt-1">
+                            <div class="progress-bar bg-success" style="width: 32%"></div>
+                        </div>
+                    </div>
+                    <div class="indicator-item mb-3">
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">ROI</span>
+                            <span class="text-primary fw-bold">18.5%</span>
+                        </div>
+                        <div class="progress mt-1">
+                            <div class="progress-bar bg-primary" style="width: 18.5%"></div>
+                        </div>
+                    </div>
+                    <div class="indicator-item mb-3">
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">Fluxo de Caixa</span>
+                            <span class="text-warning fw-bold">Positivo</span>
+                        </div>
+                        <div class="progress mt-1">
+                            <div class="progress-bar bg-warning" style="width: 85%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transações Recentes -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-arrow-up me-2"></i>
+                        Últimas Receitas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="transaction-item d-flex justify-content-between align-items-center mb-3 p-3 border rounded">
+                        <div>
+                            <h6 class="mb-1">Venda #1234</h6>
+                            <small class="text-muted">Cliente: João Silva</small>
+                        </div>
+                        <div class="text-end">
+                            <h6 class="text-success mb-1">R$ 2.500</h6>
+                            <small class="text-muted">Hoje 14:30</small>
+                        </div>
+                    </div>
+                    <div class="transaction-item d-flex justify-content-between align-items-center mb-3 p-3 border rounded">
+                        <div>
+                            <h6 class="mb-1">Venda #1233</h6>
+                            <small class="text-muted">Cliente: Maria Santos</small>
+                        </div>
+                        <div class="text-end">
+                            <h6 class="text-success mb-1">R$ 1.800</h6>
+                            <small class="text-muted">Hoje 11:15</small>
+                        </div>
+                    </div>
+                    <div class="transaction-item d-flex justify-content-between align-items-center p-3 border rounded">
+                        <div>
+                            <h6 class="mb-1">Venda #1232</h6>
+                            <small class="text-muted">Cliente: Pedro Costa</small>
+                        </div>
+                        <div class="text-end">
+                            <h6 class="text-success mb-1">R$ 3.200</h6>
+                            <small class="text-muted">Ontem 16:45</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-arrow-down me-2"></i>
+                        Últimas Despesas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="transaction-item d-flex justify-content-between align-items-center mb-3 p-3 border rounded">
+                        <div>
+                            <h6 class="mb-1">Fornecedor ABC</h6>
+                            <small class="text-muted">Materiais de escritório</small>
+                        </div>
+                        <div class="text-end">
+                            <h6 class="text-danger mb-1">R$ 850</h6>
+                            <small class="text-muted">Hoje 09:00</small>
+                        </div>
+                    </div>
+                    <div class="transaction-item d-flex justify-content-between align-items-center mb-3 p-3 border rounded">
+                        <div>
+                            <h6 class="mb-1">Energia Elétrica</h6>
+                            <small class="text-muted">Conta mensal</small>
+                        </div>
+                        <div class="text-end">
+                            <h6 class="text-danger mb-1">R$ 1.200</h6>
+                            <small class="text-muted">Ontem 15:30</small>
+                        </div>
+                    </div>
+                    <div class="transaction-item d-flex justify-content-between align-items-center p-3 border rounded">
+                        <div>
+                            <h6 class="mb-1">Internet</h6>
+                            <small class="text-muted">Serviço mensal</small>
+                        </div>
+                        <div class="text-end">
+                            <h6 class="text-danger mb-1">R$ 450</h6>
+                            <small class="text-muted">Ontem 10:15</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ações Rápidas -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>
+                        Ações Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-outline-success w-100">
+                                <i class="fas fa-plus me-2"></i>
+                                Nova Receita
+                            </button>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-outline-danger w-100">
+                                <i class="fas fa-minus me-2"></i>
+                                Nova Despesa
+                            </button>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-outline-primary w-100">
+                                <i class="fas fa-file-invoice me-2"></i>
+                                Relatório
+                            </button>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-outline-warning w-100">
+                                <i class="fas fa-cog me-2"></i>
+                                Configurações
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.transaction-item {
+    background: #f8f9fa;
+    transition: background-color 0.3s ease;
+}
+
+.transaction-item:hover {
+    background: #e9ecef;
+}
+
+.indicator-item {
+    padding: 10px 0;
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Gráfico financeiro
+const ctx = document.getElementById('financeChart').getContext('2d');
+const financeChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+        datasets: [{
+            label: 'Receitas',
+            data: [85000, 92000, 105000, 98000, 115000, 125000],
+            borderColor: '#28a745',
+            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+            tension: 0.4
+        }, {
+            label: 'Despesas',
+            data: [65000, 72000, 85000, 78000, 95000, 85000],
+            borderColor: '#dc3545',
+            backgroundColor: 'rgba(220, 53, 69, 0.1)',
+            tension: 0.4
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'top',
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+{% endblock %} 
