@@ -1,0 +1,444 @@
+{% extends 'website/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Header do Wizard -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-magic fa-4x text-primary mb-3"></i>
+                        <h1 class="display-5 mb-2">Wizard de Configuração</h1>
+                        <p class="lead text-muted">Configure sua empresa em poucos passos simples</p>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="progress mb-4" style="height: 8px;">
+                        <div class="progress-bar bg-primary" style="width: {{ progress }}%"></div>
+                    </div>
+                    
+                    <!-- Steps Indicator -->
+                    <div class="row mb-4">
+                        <div class="col-3">
+                            <div class="step-indicator completed">
+                                <div class="step-number">✓</div>
+                                <div class="step-label">Informações Básicas</div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="step-indicator completed">
+                                <div class="step-number">✓</div>
+                                <div class="step-label">Personalização</div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="step-indicator active">
+                                <div class="step-number">3</div>
+                                <div class="step-label">Configuração</div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="step-indicator">
+                                <div class="step-number">4</div>
+                                <div class="step-label">Usuários</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulário do Passo 3 -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-cogs me-2"></i>
+                        Passo 3: Configuração Automática
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="wizardForm" onsubmit="salvarPasso3(event)">
+                        <!-- Configurações de Email -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3">
+                                    <i class="fas fa-envelope me-2"></i>
+                                    Configurações de Email
+                                </h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Servidor SMTP</label>
+                                            <select class="form-select" id="smtpServidor">
+                                                <option value="gmail">Gmail</option>
+                                                <option value="outlook">Outlook/Hotmail</option>
+                                                <option value="yahoo">Yahoo</option>
+                                                <option value="custom">Personalizado</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Email para Notificações</label>
+                                            <input type="email" class="form-control" id="emailNotificacoes" 
+                                                   placeholder="notificacoes@suaempresa.com.br">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Configurações de Backup -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3">
+                                    <i class="fas fa-database me-2"></i>
+                                    Configurações de Backup
+                                </h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Frequência de Backup</label>
+                                            <select class="form-select" id="frequenciaBackup">
+                                                <option value="diario">Diário</option>
+                                                <option value="semanal" selected>Semanal</option>
+                                                <option value="mensal">Mensal</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Retenção de Backups</label>
+                                            <select class="form-select" id="retencaoBackup">
+                                                <option value="7">7 dias</option>
+                                                <option value="30" selected>30 dias</option>
+                                                <option value="90">90 dias</option>
+                                                <option value="365">1 ano</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Configurações de Segurança -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3">
+                                    <i class="fas fa-shield-alt me-2"></i>
+                                    Configurações de Segurança
+                                </h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="autenticacao2FA" checked>
+                                                <label class="form-check-label" for="autenticacao2FA">
+                                                    Autenticação em 2 Fatores
+                                                </label>
+                                            </div>
+                                            <div class="form-text">Recomendado para maior segurança</div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="loginNotificacoes" checked>
+                                                <label class="form-check-label" for="loginNotificacoes">
+                                                    Notificações de Login
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Sessão Máxima (horas)</label>
+                                            <select class="form-select" id="sessaoMaxima">
+                                                <option value="2">2 horas</option>
+                                                <option value="4">4 horas</option>
+                                                <option value="8" selected>8 horas</option>
+                                                <option value="24">24 horas</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Tentativas de Login</label>
+                                            <select class="form-select" id="tentativasLogin">
+                                                <option value="3">3 tentativas</option>
+                                                <option value="5" selected>5 tentativas</option>
+                                                <option value="10">10 tentativas</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Configurações de Notificações -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3">
+                                    <i class="fas fa-bell me-2"></i>
+                                    Configurações de Notificações
+                                </h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="notifEmail" checked>
+                                                <label class="form-check-label" for="notifEmail">
+                                                    Notificações por Email
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="notifSistema" checked>
+                                                <label class="form-check-label" for="notifSistema">
+                                                    Notificações do Sistema
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="notifWhatsApp">
+                                                <label class="form-check-label" for="notifWhatsApp">
+                                                    Notificações WhatsApp
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="notifRelatorios" checked>
+                                                <label class="form-check-label" for="notifRelatorios">
+                                                    Relatórios Automáticos
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Configurações Avançadas -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3">
+                                    <i class="fas fa-sliders-h me-2"></i>
+                                    Configurações Avançadas
+                                </h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Fuso Horário</label>
+                                            <select class="form-select" id="fusoHorario">
+                                                <option value="America/Sao_Paulo" selected>Brasília (GMT-3)</option>
+                                                <option value="America/Manaus">Manaus (GMT-4)</option>
+                                                <option value="America/Belem">Belém (GMT-3)</option>
+                                                <option value="America/Fortaleza">Fortaleza (GMT-3)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Formato de Data</label>
+                                            <select class="form-select" id="formatoData">
+                                                <option value="dd/mm/yyyy" selected>DD/MM/AAAA</option>
+                                                <option value="mm/dd/yyyy">MM/DD/AAAA</option>
+                                                <option value="yyyy-mm-dd">AAAA-MM-DD</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Resumo da Configuração -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    <h6 class="alert-heading">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        Resumo da Configuração
+                                    </h6>
+                                    <div id="resumoConfiguracao">
+                                        <p class="mb-2"><strong>Email:</strong> <span id="resumoEmail">Gmail</span></p>
+                                        <p class="mb-2"><strong>Backup:</strong> <span id="resumoBackup">Semanal (30 dias)</span></p>
+                                        <p class="mb-2"><strong>Segurança:</strong> <span id="resumoSeguranca">2FA ativado, 8h sessão</span></p>
+                                        <p class="mb-0"><strong>Notificações:</strong> <span id="resumoNotif">Email e Sistema</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botões de Navegação -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="btn btn-outline-secondary btn-lg" onclick="voltarPasso()">
+                                <i class="fas fa-arrow-left me-2"></i>Voltar
+                            </button>
+                            <button type="submit" class="btn btn-warning btn-lg">
+                                Próximo Passo <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.step-indicator {
+    text-align: center;
+    padding: 10px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.step-indicator.active {
+    background-color: #fff3cd;
+    border: 2px solid #ffc107;
+}
+
+.step-indicator.completed {
+    background-color: #e3f2fd;
+    border: 2px solid #2196f3;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #2196f3;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin: 0 auto 8px;
+}
+
+.step-indicator.active .step-number {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.step-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #666;
+}
+
+.step-indicator.active .step-label {
+    color: #856404;
+    font-weight: 600;
+}
+
+.btn-lg {
+    padding: 12px 24px;
+    font-size: 1.1rem;
+}
+
+.form-check-input:checked {
+    background-color: #ffc107;
+    border-color: #ffc107;
+}
+</style>
+
+<script>
+function salvarPasso3(event) {
+    event.preventDefault();
+    
+    // Salvar dados no localStorage
+    const dadosConfiguracao = {
+        smtpServidor: document.getElementById('smtpServidor').value,
+        emailNotificacoes: document.getElementById('emailNotificacoes').value,
+        frequenciaBackup: document.getElementById('frequenciaBackup').value,
+        retencaoBackup: document.getElementById('retencaoBackup').value,
+        autenticacao2FA: document.getElementById('autenticacao2FA').checked,
+        loginNotificacoes: document.getElementById('loginNotificacoes').checked,
+        sessaoMaxima: document.getElementById('sessaoMaxima').value,
+        tentativasLogin: document.getElementById('tentativasLogin').value,
+        notifEmail: document.getElementById('notifEmail').checked,
+        notifSistema: document.getElementById('notifSistema').checked,
+        notifWhatsApp: document.getElementById('notifWhatsApp').checked,
+        notifRelatorios: document.getElementById('notifRelatorios').checked,
+        fusoHorario: document.getElementById('fusoHorario').value,
+        formatoData: document.getElementById('formatoData').value
+    };
+    
+    localStorage.setItem('wizard_configuracao', JSON.stringify(dadosConfiguracao));
+    
+    // Mostrar loading e ir para próximo passo
+    Swal.fire({
+        title: 'Salvando...',
+        text: 'Salvando configurações do sistema',
+        icon: 'info',
+        showConfirmButton: false,
+        timer: 1500
+    }).then(() => {
+        window.location.href = '/sistema/wizard/?step=4';
+    });
+}
+
+function voltarPasso() {
+    window.location.href = '/sistema/wizard/?step=2';
+}
+
+function atualizarResumo() {
+    const smtp = document.getElementById('smtpServidor').value;
+    const backup = document.getElementById('frequenciaBackup').value;
+    const retencao = document.getElementById('retencaoBackup').value;
+    const sessao = document.getElementById('sessaoMaxima').value;
+    const notifEmail = document.getElementById('notifEmail').checked;
+    const notifSistema = document.getElementById('notifSistema').checked;
+    
+    document.getElementById('resumoEmail').textContent = smtp.charAt(0).toUpperCase() + smtp.slice(1);
+    document.getElementById('resumoBackup').textContent = `${backup.charAt(0).toUpperCase() + backup.slice(1)} (${retencao} dias)`;
+    document.getElementById('resumoSeguranca').textContent = `2FA ativado, ${sessao}h sessão`;
+    
+    const notificacoes = [];
+    if (notifEmail) notificacoes.push('Email');
+    if (notifSistema) notificacoes.push('Sistema');
+    document.getElementById('resumoNotif').textContent = notificacoes.join(' e ');
+}
+
+// Atualizar resumo quando configurações mudarem
+document.addEventListener('DOMContentLoaded', function() {
+    const inputs = document.querySelectorAll('select, input[type="checkbox"]');
+    inputs.forEach(input => {
+        input.addEventListener('change', atualizarResumo);
+    });
+    
+    // Carregar dados salvos
+    const dadosConfiguracao = JSON.parse(localStorage.getItem('wizard_configuracao') || '{}');
+    if (dadosConfiguracao.smtpServidor) {
+        document.getElementById('smtpServidor').value = dadosConfiguracao.smtpServidor;
+        document.getElementById('emailNotificacoes').value = dadosConfiguracao.emailNotificacoes || '';
+        document.getElementById('frequenciaBackup').value = dadosConfiguracao.frequenciaBackup || 'semanal';
+        document.getElementById('retencaoBackup').value = dadosConfiguracao.retencaoBackup || '30';
+        document.getElementById('autenticacao2FA').checked = dadosConfiguracao.autenticacao2FA !== false;
+        document.getElementById('loginNotificacoes').checked = dadosConfiguracao.loginNotificacoes !== false;
+        document.getElementById('sessaoMaxima').value = dadosConfiguracao.sessaoMaxima || '8';
+        document.getElementById('tentativasLogin').value = dadosConfiguracao.tentativasLogin || '5';
+        document.getElementById('notifEmail').checked = dadosConfiguracao.notifEmail !== false;
+        document.getElementById('notifSistema').checked = dadosConfiguracao.notifSistema !== false;
+        document.getElementById('notifWhatsApp').checked = dadosConfiguracao.notifWhatsApp || false;
+        document.getElementById('notifRelatorios').checked = dadosConfiguracao.notifRelatorios !== false;
+        document.getElementById('fusoHorario').value = dadosConfiguracao.fusoHorario || 'America/Sao_Paulo';
+        document.getElementById('formatoData').value = dadosConfiguracao.formatoData || 'dd/mm/yyyy';
+    }
+    
+    atualizarResumo();
+});
+
+// Incluir SweetAlert2
+if (typeof Swal === 'undefined') {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
+    document.head.appendChild(script);
+}
+</script>
+{% endblock %} 

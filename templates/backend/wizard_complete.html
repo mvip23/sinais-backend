@@ -1,0 +1,383 @@
+{% extends 'website/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Header de Conclusão -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <div class="success-animation mb-3">
+                            <i class="fas fa-check-circle fa-5x text-success"></i>
+                        </div>
+                        <h1 class="display-4 mb-2 text-success">Setup Concluído!</h1>
+                        <p class="lead text-muted">Sua empresa foi configurada com sucesso</p>
+                    </div>
+                    
+                    <!-- Progress Bar Completo -->
+                    <div class="progress mb-4" style="height: 8px;">
+                        <div class="progress-bar bg-success" style="width: 100%"></div>
+                    </div>
+                    
+                    <!-- Steps Indicator Completo -->
+                    <div class="row mb-4">
+                        <div class="col-3">
+                            <div class="step-indicator completed">
+                                <div class="step-number">✓</div>
+                                <div class="step-label">Informações Básicas</div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="step-indicator completed">
+                                <div class="step-number">✓</div>
+                                <div class="step-label">Personalização</div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="step-indicator completed">
+                                <div class="step-number">✓</div>
+                                <div class="step-label">Configuração</div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="step-indicator completed">
+                                <div class="step-number">✓</div>
+                                <div class="step-label">Usuários</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resumo da Configuração -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clipboard-check me-2"></i>
+                        Resumo da Configuração
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-primary mb-3">
+                                <i class="fas fa-building me-2"></i>
+                                Dados da Empresa
+                            </h6>
+                            <div class="info-item">
+                                <strong>Nome:</strong> <span id="resumoEmpresaNome">{{ empresa.nome }}</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>CNPJ:</strong> <span id="resumoEmpresaCNPJ">{{ empresa.cnpj }}</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Email:</strong> <span id="resumoEmpresaEmail">{{ empresa.email }}</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Telefone:</strong> <span id="resumoEmpresaTelefone">{{ empresa.telefone }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-primary mb-3">
+                                <i class="fas fa-users me-2"></i>
+                                Usuários Criados
+                            </h6>
+                            <div class="info-item">
+                                <strong>Administrador:</strong> <span id="resumoAdminNome">Configurado</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Usuários Adicionais:</strong> <span id="resumoUsuariosAdicionais">0</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Total de Usuários:</strong> <span id="resumoTotalUsuarios">1</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Próximos Passos -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-rocket me-2"></i>
+                        Próximos Passos
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="next-step-card text-center">
+                                <i class="fas fa-sign-in-alt fa-3x text-primary mb-3"></i>
+                                <h6>1. Fazer Login</h6>
+                                <p class="text-muted">Acesse o sistema com suas credenciais</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="next-step-card text-center">
+                                <i class="fas fa-cog fa-3x text-warning mb-3"></i>
+                                <h6>2. Configurar Módulos</h6>
+                                <p class="text-muted">Personalize os módulos conforme sua necessidade</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="next-step-card text-center">
+                                <i class="fas fa-users fa-3x text-success mb-3"></i>
+                                <h6>3. Adicionar Equipe</h6>
+                                <p class="text-muted">Convide sua equipe para usar o sistema</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ações Rápidas -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>
+                        Ações Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-outline-primary w-100" onclick="irParaDashboard()">
+                                <i class="fas fa-tachometer-alt me-2"></i>
+                                Dashboard
+                            </button>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-outline-success w-100" onclick="irParaConfiguracoes()">
+                                <i class="fas fa-cog me-2"></i>
+                                Configurações
+                            </button>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-outline-info w-100" onclick="irParaUsuarios()">
+                                <i class="fas fa-users me-2"></i>
+                                Usuários
+                            </button>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-outline-warning w-100" onclick="baixarManual()">
+                                <i class="fas fa-download me-2"></i>
+                                Manual
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Suporte e Ajuda -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-life-ring me-2"></i>
+                        Suporte e Ajuda
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-primary mb-3">
+                                <i class="fas fa-question-circle me-2"></i>
+                                Precisa de Ajuda?
+                            </h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-envelope text-primary me-2"></i>suporte@sistemajam.com.br</li>
+                                <li><i class="fas fa-phone text-primary me-2"></i>(11) 99999-9999</li>
+                                <li><i class="fas fa-comments text-primary me-2"></i>Chat Online</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-primary mb-3">
+                                <i class="fas fa-book me-2"></i>
+                                Recursos Úteis
+                            </h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-play text-success me-2"></i>Vídeos Tutoriais</li>
+                                <li><i class="fas fa-file-pdf text-danger me-2"></i>Manual do Usuário</li>
+                                <li><i class="fas fa-question text-warning me-2"></i>FAQ</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botão Final -->
+            <div class="text-center mt-4">
+                <button class="btn btn-success btn-lg" onclick="irParaDashboard()">
+                    <i class="fas fa-rocket me-2"></i>
+                    Começar a Usar o Sistema
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.success-animation {
+    animation: bounceIn 1s ease-in-out;
+}
+
+@keyframes bounceIn {
+    0% {
+        transform: scale(0.3);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    70% {
+        transform: scale(0.9);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.step-indicator {
+    text-align: center;
+    padding: 10px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.step-indicator.completed {
+    background-color: #d4edda;
+    border: 2px solid #28a745;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #28a745;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin: 0 auto 8px;
+}
+
+.step-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #666;
+}
+
+.step-indicator.completed .step-label {
+    color: #155724;
+    font-weight: 600;
+}
+
+.info-item {
+    margin-bottom: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.next-step-card {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.next-step-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.btn-lg {
+    padding: 15px 30px;
+    font-size: 1.2rem;
+}
+</style>
+
+<script>
+function irParaDashboard() {
+    window.location.href = '/sistema/';
+}
+
+function irParaConfiguracoes() {
+    window.location.href = '/sistema/configuracoes/';
+}
+
+function irParaUsuarios() {
+    window.location.href = '/sistema/configuracoes/';
+}
+
+function baixarManual() {
+    Swal.fire({
+        title: 'Download do Manual',
+        text: 'O manual será baixado em breve...',
+        icon: 'info',
+        showConfirmButton: false,
+        timer: 2000
+    }).then(() => {
+        // Simular download
+        const link = document.createElement('a');
+        link.href = '#';
+        link.download = 'manual_sistema_jam.pdf';
+        link.click();
+        
+        Swal.fire('Sucesso!', 'Manual baixado com sucesso!', 'success');
+    });
+}
+
+// Carregar dados do wizard
+document.addEventListener('DOMContentLoaded', function() {
+    const dadosCompletos = JSON.parse(localStorage.getItem('wizard_completo') || '{}');
+    
+    if (dadosCompletos.empresa) {
+        document.getElementById('resumoEmpresaNome').textContent = dadosCompletos.empresa.nome || 'Sua Empresa';
+        document.getElementById('resumoEmpresaCNPJ').textContent = dadosCompletos.empresa.cnpj || '12.345.678/0001-90';
+        document.getElementById('resumoEmpresaEmail').textContent = dadosCompletos.empresa.email || 'contato@suaempresa.com.br';
+        document.getElementById('resumoEmpresaTelefone').textContent = dadosCompletos.empresa.telefone || '(11) 99999-9999';
+    }
+    
+    if (dadosCompletos.usuarios) {
+        document.getElementById('resumoAdminNome').textContent = dadosCompletos.usuarios.admin?.nome || 'Configurado';
+        const usuariosAdicionais = dadosCompletos.usuarios.usuariosAdicionais?.length || 0;
+        document.getElementById('resumoUsuariosAdicionais').textContent = usuariosAdicionais;
+        document.getElementById('resumoTotalUsuarios').textContent = 1 + usuariosAdicionais;
+    }
+    
+    // Mostrar confetti de celebração
+    setTimeout(() => {
+        if (typeof confetti !== 'undefined') {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+        }
+    }, 1000);
+});
+
+// Incluir SweetAlert2 e Confetti
+if (typeof Swal === 'undefined') {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
+    document.head.appendChild(script);
+}
+
+if (typeof confetti === 'undefined') {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js';
+    document.head.appendChild(script);
+}
+</script>
+{% endblock %} 

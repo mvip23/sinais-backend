@@ -17,8 +17,54 @@ def dashboard_view(request):
             {'name': 'Configurações', 'url': '/sistema/configuracoes/', 'icon': 'fas fa-cog', 'color': 'dark'},
             {'name': 'IA Assistant', 'url': '/ai/', 'icon': 'fas fa-robot', 'color': 'primary'},
             {'name': 'Realidade Aumentada', 'url': '/ar/', 'icon': 'fas fa-vr-cardboard', 'color': 'info'},
-        ]
+        ],
+        'wizard_available': True
     })
+
+def wizard_setup_view(request):
+    """Wizard de configuração inicial da empresa"""
+    step = request.GET.get('step', '1')
+    
+    if step == '1':
+        return render(request, 'backend/wizard_step1.html', {
+            'title': 'Setup da Empresa - Passo 1',
+            'step': 1,
+            'total_steps': 4,
+            'progress': 25
+        })
+    elif step == '2':
+        return render(request, 'backend/wizard_step2.html', {
+            'title': 'Setup da Empresa - Passo 2',
+            'step': 2,
+            'total_steps': 4,
+            'progress': 50
+        })
+    elif step == '3':
+        return render(request, 'backend/wizard_step3.html', {
+            'title': 'Setup da Empresa - Passo 3',
+            'step': 3,
+            'total_steps': 4,
+            'progress': 75
+        })
+    elif step == '4':
+        return render(request, 'backend/wizard_step4.html', {
+            'title': 'Setup da Empresa - Passo 4',
+            'step': 4,
+            'total_steps': 4,
+            'progress': 100
+        })
+    else:
+        return render(request, 'backend/wizard_complete.html', {
+            'title': 'Setup Concluído!',
+            'empresa': {
+                'nome': 'Sua Empresa',
+                'cnpj': '12.345.678/0001-90',
+                'endereco': 'Rua das Inovações, 123 - São Paulo, SP',
+                'telefone': '(11) 99999-9999',
+                'email': 'contato@suaempresa.com.br',
+                'website': 'www.suaempresa.com.br'
+            }
+        })
 
 def financeiro_view(request):
     """Módulo Financeiro"""
@@ -187,6 +233,7 @@ def configuracoes_view(request):
 
 urlpatterns = [
     path('', dashboard_view, name='dashboard'),
+    path('wizard/', wizard_setup_view, name='wizard_setup'),
     path('financeiro/', financeiro_view, name='financeiro'),
     path('produtos/', produtos_view, name='produtos'),
     path('vendas/', vendas_view, name='vendas'),
