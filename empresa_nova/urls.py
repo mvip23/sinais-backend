@@ -39,6 +39,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('website.urls')),
     path('sistema/', include('backend.urls')),
+    path('ai/', include('ai_assistant.urls')),
+    path('ar/', include('ar_experience.urls')),
     path('teste/', test_view, name='teste'),
 ]
 

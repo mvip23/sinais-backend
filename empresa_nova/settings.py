@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'website',  # Site de vendas
     'subscriptions',  # Sistema de assinaturas
     'ai_assistant',  # IA integrada
+    'ar_experience',  # Realidade Aumentada
     'modern_ui',  # Interface moderna
     
     # Third party
