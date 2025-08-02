@@ -1,0 +1,394 @@
+{% extends 'website/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-gradient-danger text-white">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h1 class="display-4 mb-2">
+                                <i class="fas fa-tools me-3"></i>
+                                Ordem de Serviço
+                            </h1>
+                            <p class="lead mb-0">Gestão completa de serviços com PDF, impressão e WhatsApp</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="stats-card bg-white bg-opacity-25 rounded p-3">
+                                <h3 class="text-white mb-0">{{ ordens|length }}</h3>
+                                <small class="text-white-50">Ordens Ativas</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ações Rápidas -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>
+                        Ações Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-outline-primary w-100" onclick="novaOrdem()">
+                                <i class="fas fa-plus me-2"></i>
+                                Nova Ordem
+                            </button>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-outline-success w-100" onclick="gerarPDF()">
+                                <i class="fas fa-file-pdf me-2"></i>
+                                Gerar PDF
+                            </button>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-outline-warning w-100" onclick="imprimirA4()">
+                                <i class="fas fa-print me-2"></i>
+                                Imprimir A4
+                            </button>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-outline-info w-100" onclick="enviarWhatsApp()">
+                                <i class="fab fa-whatsapp me-2"></i>
+                                Enviar WhatsApp
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Ordens de Serviço -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>
+                        Ordens de Serviço
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Cliente</th>
+                                    <th>Serviço</th>
+                                    <th>Status</th>
+                                    <th>Valor</th>
+                                    <th>Data</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ordem in ordens %}
+                                <tr>
+                                    <td><strong>{{ ordem.id }}</strong></td>
+                                    <td>{{ ordem.cliente }}</td>
+                                    <td>{{ ordem.servico }}</td>
+                                    <td>
+                                        {% if ordem.status == 'Concluído' %}
+                                            <span class="badge bg-success">{{ ordem.status }}</span>
+                                        {% elif ordem.status == 'Em Andamento' %}
+                                            <span class="badge bg-warning">{{ ordem.status }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ ordem.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td><strong>{{ ordem.valor }}</strong></td>
+                                    <td>{{ ordem.data }}</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <button class="btn btn-sm btn-outline-primary" onclick="visualizarOrdem('{{ ordem.id }}')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success" onclick="gerarPDFOrdem('{{ ordem.id }}')">
+                                                <i class="fas fa-file-pdf"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-warning" onclick="imprimirOrdem('{{ ordem.id }}')">
+                                                <i class="fas fa-print"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-info" onclick="enviarWhatsAppOrdem('{{ ordem.id }}')">
+                                                <i class="fab fa-whatsapp"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Visualizar/Editar Ordem -->
+    <div class="modal fade" id="ordemModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-tools me-2"></i>
+                        Ordem de Serviço - <span id="ordemId"></span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-primary">Informações do Cliente</h6>
+                            <div class="mb-3">
+                                <label class="form-label">Nome:</label>
+                                <input type="text" class="form-control" id="clienteNome" value="João Silva">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Telefone:</label>
+                                <input type="text" class="form-control" id="clienteTelefone" value="(11) 99999-9999">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email:</label>
+                                <input type="email" class="form-control" id="clienteEmail" value="joao@email.com">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-primary">Detalhes do Serviço</h6>
+                            <div class="mb-3">
+                                <label class="form-label">Tipo de Serviço:</label>
+                                <input type="text" class="form-control" id="tipoServico" value="Manutenção de Computador">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Descrição:</label>
+                                <textarea class="form-control" id="descricaoServico" rows="3">Manutenção preventiva e limpeza do sistema</textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Valor:</label>
+                                <input type="text" class="form-control" id="valorServico" value="R$ 150,00">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <h6 class="text-primary">Status e Observações</h6>
+                            <div class="mb-3">
+                                <label class="form-label">Status:</label>
+                                <select class="form-select" id="statusOrdem">
+                                    <option value="Aguardando">Aguardando</option>
+                                    <option value="Em Andamento" selected>Em Andamento</option>
+                                    <option value="Concluído">Concluído</option>
+                                    <option value="Cancelado">Cancelado</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Observações:</label>
+                                <textarea class="form-control" id="observacoes" rows="3">Sistema funcionando normalmente após manutenção</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-success" onclick="salvarOrdem()">
+                        <i class="fas fa-save me-2"></i>Salvar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="gerarPDFModal()">
+                        <i class="fas fa-file-pdf me-2"></i>Gerar PDF
+                    </button>
+                    <button type="button" class="btn btn-warning" onclick="imprimirModal()">
+                        <i class="fas fa-print me-2"></i>Imprimir
+                    </button>
+                    <button type="button" class="btn btn-info" onclick="enviarWhatsAppModal()">
+                        <i class="fab fa-whatsapp me-2"></i>WhatsApp
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.btn-group .btn {
+    margin-right: 2px;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    border-top: none;
+}
+
+.modal-lg {
+    max-width: 900px;
+}
+</style>
+
+<script>
+// Funções para ações rápidas
+function novaOrdem() {
+    document.getElementById('ordemId').textContent = 'NOVA';
+    document.getElementById('clienteNome').value = '';
+    document.getElementById('clienteTelefone').value = '';
+    document.getElementById('clienteEmail').value = '';
+    document.getElementById('tipoServico').value = '';
+    document.getElementById('descricaoServico').value = '';
+    document.getElementById('valorServico').value = '';
+    document.getElementById('statusOrdem').value = 'Aguardando';
+    document.getElementById('observacoes').value = '';
+    
+    new bootstrap.Modal(document.getElementById('ordemModal')).show();
+}
+
+function visualizarOrdem(ordemId) {
+    document.getElementById('ordemId').textContent = ordemId;
+    // Aqui você carregaria os dados da ordem específica
+    new bootstrap.Modal(document.getElementById('ordemModal')).show();
+}
+
+function gerarPDF() {
+    Swal.fire({
+        title: 'Gerando PDF...',
+        text: 'Preparando documento para download',
+        icon: 'info',
+        showConfirmButton: false,
+        timer: 2000
+    }).then(() => {
+        // Simular geração de PDF
+        const link = document.createElement('a');
+        link.href = 'data:application/pdf;base64,JVBERi0xLjQKJcOkw7zDtsO...'; // PDF base64 simulado
+        link.download = 'ordem_servico.pdf';
+        link.click();
+        
+        Swal.fire('Sucesso!', 'PDF gerado com sucesso!', 'success');
+    });
+}
+
+function imprimirA4() {
+    Swal.fire({
+        title: 'Preparando impressão...',
+        text: 'Configurando para impressão A4',
+        icon: 'info',
+        showConfirmButton: false,
+        timer: 1500
+    }).then(() => {
+        // Simular impressão
+        window.print();
+        Swal.fire('Sucesso!', 'Enviado para impressora!', 'success');
+    });
+}
+
+function enviarWhatsApp() {
+    Swal.fire({
+        title: 'Enviando WhatsApp...',
+        text: 'Preparando mensagem',
+        icon: 'info',
+        showConfirmButton: false,
+        timer: 2000
+    }).then(() => {
+        // Simular envio WhatsApp
+        const numero = '5511999999999';
+        const mensagem = encodeURIComponent('Sua ordem de serviço foi gerada! Acesse o sistema para mais detalhes.');
+        window.open(`https://wa.me/${numero}?text=${mensagem}`, '_blank');
+        
+        Swal.fire('Sucesso!', 'Mensagem enviada via WhatsApp!', 'success');
+    });
+}
+
+// Funções para ações específicas de cada ordem
+function gerarPDFOrdem(ordemId) {
+    Swal.fire({
+        title: `Gerando PDF - ${ordemId}`,
+        text: 'Preparando documento específico',
+        icon: 'info',
+        showConfirmButton: false,
+        timer: 2000
+    }).then(() => {
+        const link = document.createElement('a');
+        link.href = 'data:application/pdf;base64,JVBERi0xLjQKJcOkw7zDtsO...';
+        link.download = `ordem_servico_${ordemId}.pdf`;
+        link.click();
+        
+        Swal.fire('Sucesso!', `PDF da ${ordemId} gerado!`, 'success');
+    });
+}
+
+function imprimirOrdem(ordemId) {
+    Swal.fire({
+        title: `Imprimindo - ${ordemId}`,
+        text: 'Enviando para impressora A4',
+        icon: 'info',
+        showConfirmButton: false,
+        timer: 1500
+    }).then(() => {
+        window.print();
+        Swal.fire('Sucesso!', `${ordemId} enviada para impressora!`, 'success');
+    });
+}
+
+function enviarWhatsAppOrdem(ordemId) {
+    Swal.fire({
+        title: `Enviando WhatsApp - ${ordemId}`,
+        text: 'Preparando mensagem personalizada',
+        icon: 'info',
+        showConfirmButton: false,
+        timer: 2000
+    }).then(() => {
+        const numero = '5511999999999';
+        const mensagem = encodeURIComponent(`Sua ordem de serviço ${ordemId} está pronta! Acesse o sistema para visualizar.`);
+        window.open(`https://wa.me/${numero}?text=${mensagem}`, '_blank');
+        
+        Swal.fire('Sucesso!', `WhatsApp da ${ordemId} enviado!`, 'success');
+    });
+}
+
+// Funções do modal
+function salvarOrdem() {
+    Swal.fire({
+        title: 'Salvando...',
+        text: 'Salvando alterações da ordem',
+        icon: 'info',
+        showConfirmButton: false,
+        timer: 1500
+    }).then(() => {
+        Swal.fire('Sucesso!', 'Ordem salva com sucesso!', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('ordemModal')).hide();
+    });
+}
+
+function gerarPDFModal() {
+    const ordemId = document.getElementById('ordemId').textContent;
+    gerarPDFOrdem(ordemId);
+}
+
+function imprimirModal() {
+    const ordemId = document.getElementById('ordemId').textContent;
+    imprimirOrdem(ordemId);
+}
+
+function enviarWhatsAppModal() {
+    const ordemId = document.getElementById('ordemId').textContent;
+    enviarWhatsAppOrdem(ordemId);
+}
+
+// Incluir SweetAlert2
+if (typeof Swal === 'undefined') {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
+    document.head.appendChild(script);
+}
+</script>
+{% endblock %} 

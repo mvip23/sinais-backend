@@ -12,6 +12,7 @@ def dashboard_view(request):
             {'name': 'Vendas', 'url': '/sistema/vendas/', 'icon': 'fas fa-shopping-cart', 'color': 'warning'},
             {'name': 'Clientes', 'url': '/sistema/clientes/', 'icon': 'fas fa-users', 'color': 'info'},
             {'name': 'Estoque', 'url': '/sistema/estoque/', 'icon': 'fas fa-warehouse', 'color': 'secondary'},
+            {'name': 'Ordem de Serviço', 'url': '/sistema/ordem-servico/', 'icon': 'fas fa-tools', 'color': 'danger'},
             {'name': 'Relatórios', 'url': '/sistema/relatorios/', 'icon': 'fas fa-chart-bar', 'color': 'dark'},
             {'name': 'IA Assistant', 'url': '/ai/', 'icon': 'fas fa-robot', 'color': 'primary'},
             {'name': 'Realidade Aumentada', 'url': '/ar/', 'icon': 'fas fa-vr-cardboard', 'color': 'info'},
@@ -80,6 +81,38 @@ def estoque_view(request):
         }
     })
 
+def ordem_servico_view(request):
+    """Módulo de Ordem de Serviço"""
+    return render(request, 'backend/ordem_servico.html', {
+        'title': 'Ordem de Serviço - Sistema JAM',
+        'ordens': [
+            {
+                'id': 'OS-001',
+                'cliente': 'João Silva',
+                'servico': 'Manutenção de Computador',
+                'status': 'Em Andamento',
+                'valor': 'R$ 150,00',
+                'data': '02/08/2024'
+            },
+            {
+                'id': 'OS-002',
+                'cliente': 'Maria Santos',
+                'servico': 'Instalação de Software',
+                'status': 'Concluído',
+                'valor': 'R$ 80,00',
+                'data': '01/08/2024'
+            },
+            {
+                'id': 'OS-003',
+                'cliente': 'Pedro Costa',
+                'servico': 'Limpeza de Sistema',
+                'status': 'Aguardando',
+                'valor': 'R$ 120,00',
+                'data': '02/08/2024'
+            }
+        ]
+    })
+
 def relatorios_view(request):
     """Módulo de Relatórios"""
     return render(request, 'backend/relatorios.html', {
@@ -100,5 +133,6 @@ urlpatterns = [
     path('vendas/', vendas_view, name='vendas'),
     path('clientes/', clientes_view, name='clientes'),
     path('estoque/', estoque_view, name='estoque'),
+    path('ordem-servico/', ordem_servico_view, name='ordem_servico'),
     path('relatorios/', relatorios_view, name='relatorios'),
 ] 
